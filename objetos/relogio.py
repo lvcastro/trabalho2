@@ -2,27 +2,22 @@ from OpenGL.GL import *
 import loaders
 import core.utils as utils
 
-class Cama:
+class Relogio:
     def __init__(self):
         self.verticeInicial = 0
         self.quantosVertices = 0
 
-    def carregar_cama(self, vertices_list, textures_coord_list):
+    def carregar_relogio(self, vertices_list, textures_coord_list):
         self.verticeInicial, self.quantosVertices = loaders.load_obj_and_texture(
-            'objetos/cama/cama.obj',
+            'objetos/relogio/relogio.obj',
             [
-                'objetos/cama/Fabric_D.jpg',
-                'objetos/cama/Fabric_N.jpg',
-                'objetos/cama/Lamp.png',
-                'objetos/cama/Wood_D.jpg',
-                'objetos/cama/Wood_N.jpg',
-                'objetos/cama/Wood_R.jpg',
+                'objetos/relogio/Texture_Diff.png'
             ],
             vertices_list,
             textures_coord_list
         )
 
-    def desenha_cama(self, program):        
+    def desenha_relogio(self, program):        
         # rotacao
         angle = 0.0;
         r_x = 0.0; r_y = 0.0; r_z = 1.0;
@@ -38,5 +33,5 @@ class Cama:
         glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
         
         glBindTexture(GL_TEXTURE_2D, 0)
-        # desenha a cama
+        # desenha o relógio
         glDrawArrays(GL_TRIANGLES, self.verticeInicial, self.quantosVertices) ## renderizando

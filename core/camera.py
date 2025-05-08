@@ -79,10 +79,10 @@ class Camera:
         # global fov
 
         self.fov -= yoffset
-        if (fov < 1.0):
-            fov = 1.0
-        if (fov > 45.0):
-            fov = 45.0
+        if (self.fov < 1.0):
+            self.fov = 1.0
+        if (self.fov > 45.0):
+            self.fov = 45.0
 
     def view(self):
         mat_view = glm.lookAt(self.cameraPos, self.cameraPos + self.cameraFront, self.cameraUp);
