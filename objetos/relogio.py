@@ -8,7 +8,7 @@ class Relogio:
         self.quantosVertices = 0
 
     def carregar_relogio(self, vertices_list, textures_coord_list):
-        self.verticeInicial, self.quantosVertices = loaders.load_obj_and_texture(
+        self.verticeInicial, self.quantosVertices, self.texture_id = loaders.load_obj_and_texture(
             'objetos/relogio/relogio.obj',
             [
                 'objetos/relogio/Texture_Diff.png'
@@ -32,6 +32,8 @@ class Relogio:
         loc_model = glGetUniformLocation(program, "model")
         glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
         
-        glBindTexture(GL_TEXTURE_2D, 0)
+        if self.texture_id is not None:
+            glBindTexture(GL_TEXTURE_2D, self.texture_id)
+
         # desenha o relógio
         glDrawArrays(GL_TRIANGLES, self.verticeInicial, self.quantosVertices) ## renderizando

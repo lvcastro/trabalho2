@@ -6,17 +6,18 @@ class Cama:
     def __init__(self):
         self.verticeInicial = 0
         self.quantosVertices = 0
+        self.texture_id = None
 
     def carregar_cama(self, vertices_list, textures_coord_list):
-        self.verticeInicial, self.quantosVertices = loaders.load_obj_and_texture(
+        self.verticeInicial, self.quantosVertices, self.texture_id = loaders.load_obj_and_texture(
             'objetos/cama/cama.obj',
             [
                 'objetos/cama/Fabric_D.jpg',
-                'objetos/cama/Fabric_N.jpg',
-                'objetos/cama/Lamp.png',
-                'objetos/cama/Wood_D.jpg',
-                'objetos/cama/Wood_N.jpg',
-                'objetos/cama/Wood_R.jpg',
+                # 'objetos/cama/Fabric_N.jpg',
+                # 'objetos/cama/Lamp.png',
+                # 'objetos/cama/Wood_D.jpg',
+                # 'objetos/cama/Wood_N.jpg',
+                # 'objetos/cama/Wood_R.jpg',
             ],
             vertices_list,
             textures_coord_list
@@ -37,6 +38,7 @@ class Cama:
         loc_model = glGetUniformLocation(program, "model")
         glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
         
-        glBindTexture(GL_TEXTURE_2D, 0)
+        if self.texture_id is not None:
+            glBindTexture(GL_TEXTURE_2D, self.texture_id)
         # desenha a cama
         glDrawArrays(GL_TRIANGLES, self.verticeInicial, self.quantosVertices) ## renderizando

@@ -48,7 +48,8 @@ def load_model_from_file(filename):
 
     return model
 
-def load_texture_from_file(texture_id, img_textura):
+def load_texture_from_file(img_textura):
+    texture_id = glGenTextures(1)  # Gera um ID único para a textura
     glBindTexture(GL_TEXTURE_2D, texture_id)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
@@ -60,6 +61,7 @@ def load_texture_from_file(texture_id, img_textura):
     image_data = img.tobytes("raw", "RGB", 0, -1)
     #image_data = np.array(list(img.getdata()), np.uint8)
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, img_width, img_height, 0, GL_RGB, GL_UNSIGNED_BYTE, image_data)
+    return texture_id
 
 def load_obj_and_texture(objFile, texturesList, vertices_list, textures_coord_list):
     modelo = load_model_from_file(objFile)
@@ -79,9 +81,15 @@ def load_obj_and_texture(objFile, texturesList, vertices_list, textures_coord_li
     verticeFinal = len(vertices_list)
     print('Processando modelo {}. Vertice final: {}'.format(objFile, len(vertices_list)))
     
-    ### carregando textura equivalente e definindo um id (buffer): use um id por textura!
-    if texturesList:
-        for id in range(len(texturesList)):
-            load_texture_from_file(id,texturesList[id])
+    texture_id = None
+    if texturesList and len(texturesList) > 0:
+        texture_id = load_texture_from_file(texturesList[0])
+
+    return verticeInicial, verticeFinal - verticeInicial, texture_id
+
+    # ### carregando textura equivalente e definindo um id (buffer): use um id por textura!
+    # if texturesList:
+    #     for id in range(len(texturesList)):
+    #         load_texture_from_file(id,texturesList[id])
     
     return verticeInicial, verticeFinal - verticeInicial
