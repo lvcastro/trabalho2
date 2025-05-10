@@ -61,3 +61,10 @@ class Relogio(Object3D):
             obj_file='objetos/relogio/relogio.obj', 
             texture_file='objetos/relogio/Texture_Diff.png'
         )
+
+class Mesa(Object3D):
+    def __init__(self):
+        super().__init__(
+            obj_file='objetos/mesa/mesa.obj', 
+            texture_file='objetos/mesa/Wood1_Albedo.png'
+        )

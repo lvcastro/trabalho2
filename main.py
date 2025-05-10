@@ -43,6 +43,11 @@ relogio = obj.Relogio()
 relogio.carregar_objeto(vertices_list, textures_coord_list)
 relogio.set_position(-2.0, 0.0, -20.0)
 
+mesa = obj.Mesa()
+mesa.carregar_objeto(vertices_list, textures_coord_list)
+mesa.set_position(-3.0, 0.0, -10.0)
+mesa.set_scale(6, 6, 6)
+
 # %%
 # BUFFERS DE VERTICE E TEXTURA
 utils.setup_vertex_buffer(program, vertices_list)
@@ -80,6 +85,7 @@ while not glfw.window_should_close(window):
     # DESENHA OBJETOS
     cama.desenhar(program)
     relogio.desenhar(program)
+    mesa.desenhar(program)
     
     mat_view = camera.view()
     loc_view = glGetUniformLocation(program, "view")
