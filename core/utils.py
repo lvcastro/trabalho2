@@ -41,7 +41,6 @@ def framebuffer_size_callback(window, largura, altura):
     glViewport(0, 0, largura, altura)
 
 def model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z):
-    
     angle = math.radians(angle)
     
     matrix_transform = glm.mat4(1.0) # instanciando uma matriz identidade

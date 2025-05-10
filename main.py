@@ -38,14 +38,16 @@ textures_coord_list = []
 cama = obj.Cama()
 cama.carregar_objeto(vertices_list, textures_coord_list)
 cama.set_position(2.0, 0.0, -20.0)
+cama.set_rotation(-90, 0, 1, 0)
 
 relogio = obj.Relogio()
 relogio.carregar_objeto(vertices_list, textures_coord_list)
-relogio.set_position(-2.0, 0.0, -20.0)
+relogio.set_position(-2.2, 2.5, -18.0)
+relogio.set_scale(0.25, 0.25, 0.25)
 
 mesa = obj.Mesa()
 mesa.carregar_objeto(vertices_list, textures_coord_list)
-mesa.set_position(-3.0, 0.0, -10.0)
+mesa.set_position(-2.2, 0.0, -18.0)
 mesa.set_scale(6, 6, 6)
 
 # %%
