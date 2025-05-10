@@ -2,10 +2,9 @@
 import glfw
 from OpenGL.GL import *
 from core.shader import Shader
-import core.utils as utils
+from core import utils
 from core.camera import Camera
-from objetos.cama import Cama
-from objetos.relogio import Relogio;
+import objetos.objetos as obj
 
 # # %%
 # CRIANDO A JANELA
@@ -36,10 +35,14 @@ textures_coord_list = []
 
 # %%
 # CARREGA OBJETOS
-cama = Cama()
-cama.carregar_cama(vertices_list, textures_coord_list)
-relogio = Relogio()
-relogio.carregar_relogio(vertices_list, textures_coord_list)
+cama = obj.Cama()
+cama.carregar_objeto(vertices_list, textures_coord_list)
+cama.set_position(2.0, 0.0, -20.0)
+
+relogio = obj.Relogio()
+relogio.carregar_objeto(vertices_list, textures_coord_list)
+relogio.set_position(-2.0, 0.0, -20.0)
+
 # %%
 # BUFFERS DE VERTICE E TEXTURA
 utils.setup_vertex_buffer(program, vertices_list)
@@ -75,8 +78,8 @@ while not glfw.window_should_close(window):
     glPolygonMode(GL_FRONT_AND_BACK,GL_FILL)
     
     # DESENHA OBJETOS
-    cama.desenha_cama(program)
-    relogio.desenha_relogio(program)
+    cama.desenhar(program)
+    relogio.desenhar(program)
     
     mat_view = camera.view()
     loc_view = glGetUniformLocation(program, "view")
