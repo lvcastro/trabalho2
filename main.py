@@ -42,13 +42,30 @@ cama.set_rotation(-90, 0, 1, 0)
 
 relogio = obj.Relogio()
 relogio.carregar_objeto(vertices_list, textures_coord_list)
-relogio.set_position(-2.2, 2.5, -18.0)
+relogio.set_position(-2.2, 2.5, -18.5)
 relogio.set_scale(0.25, 0.25, 0.25)
 
 mesa = obj.Mesa()
 mesa.carregar_objeto(vertices_list, textures_coord_list)
-mesa.set_position(-2.2, 0.0, -18.0)
+mesa.set_position(-2.2, 0.0, -18.5)
 mesa.set_scale(6, 6, 6)
+
+banco = obj.Banco()
+banco.carregar_objeto(vertices_list, textures_coord_list)
+banco.set_position(-4.0, 0.0, -20)
+
+placa = obj.Placa()
+placa.carregar_objeto(vertices_list, textures_coord_list)
+placa.set_position(-4.0, 0.0, -10)
+placa.set_scale(0.05, 0.05, 0.05)
+
+chao = obj.Chao()
+chao.carregar_objeto(vertices_list, textures_coord_list)
+chao.set_position(0.0, -4.0, -20)
+
+skybox = obj.Skybox()
+skybox.carregar_objeto(vertices_list, textures_coord_list)
+skybox.set_position(0.0, 8.0, -20)
 
 # %%
 # BUFFERS DE VERTICE E TEXTURA
@@ -88,6 +105,10 @@ while not glfw.window_should_close(window):
     cama.desenhar(program)
     relogio.desenhar(program)
     mesa.desenhar(program)
+    banco.desenhar(program)
+    chao.desenhar(program)
+    placa.desenhar(program)
+    skybox.desenhar(program)
     
     mat_view = camera.view()
     loc_view = glGetUniformLocation(program, "view")

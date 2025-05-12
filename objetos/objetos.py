@@ -68,3 +68,38 @@ class Mesa(Object3D):
             obj_file='objetos/mesa/mesa.obj', 
             texture_file='objetos/mesa/Wood1_Albedo.png'
         )
+
+class Banco(Object3D):
+    def __init__(self):
+            super().__init__(
+                obj_file='objetos/banco/bench.obj', 
+                texture_file='objetos/banco/benchs_diffuse.jpg'
+            )
+
+class Chao(Object3D):
+    def __init__(self):
+            super().__init__(
+                obj_file='objetos/chao/chao.obj', 
+                texture_file='objetos/banco/benchs_specular.jpg'
+            )
+
+class Placa(Object3D):
+    def __init__(self):
+            super().__init__(
+                obj_file='objetos/placa/placa.obj', 
+                texture_file='objetos/placa/placa.jpg'
+            )
+
+class Skybox(Object3D):
+    def __init__(self):
+            super().__init__(
+                obj_file='objetos/skybox/skybox.obj', 
+                texture_file='objetos/skybox/skybox.png'
+            )
+
+# class Quarto(Object3D):
+#     def __init__(self):
+#         super().__init__(
+#             obj_file='objetos/quarto/quarto.obj'
+#         )
+#     def desenhar(self)
