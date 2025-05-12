@@ -8,7 +8,7 @@ class Object3D:
         self.quantosVertices = 0
         self.texture_id = None
         self.position = [0.0, 0.0, -20.0]  # posição padrão (x, y, z)
-        self.rotation = [0.0, 0.0, 0.0, 1.0]  # ângulo, x, y, z
+        self.rotation = [0.0, 0.0, 0.0]  # angulo em graus (x, y, z)
         self.scale = [1.0, 1.0, 1.0]  # escala x, y, z
         self.obj_file = obj_file
         self.texture_file = texture_file
@@ -25,20 +25,20 @@ class Object3D:
     def set_position(self, x, y, z):
             self.position = [x, y, z]
             
-    def set_rotation(self, angle, x, y, z):
-        self.rotation = [angle, x, y, z]
+    def set_rotation(self, x, y, z):
+        self.rotation = [x, y, z]
 
     def set_scale(self, x, y, z):
         self.scale = [x, y, z]
 
     def desenhar(self, program):
         # Obtém valores de transformação
-        angle, r_x, r_y, r_z = self.rotation
+        r_x, r_y, r_z = self.rotation
         t_x, t_y, t_z = self.position
         s_x, s_y, s_z = self.scale
         
         # Aplica transformações
-        mat_model = utils.model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
+        mat_model = utils.model(r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
         loc_model = glGetUniformLocation(program, "model")
         glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
         

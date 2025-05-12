@@ -40,17 +40,22 @@ def framebuffer_size_callback(window, largura, altura):
     # height will be significantly larger than specified on retina displays.
     glViewport(0, 0, largura, altura)
 
-def model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z):
-    angle = math.radians(angle)
+def model(r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z):
+    # angle = math.radians(angle)
+    r_x = math.radians(r_x)
+    r_y = math.radians(r_y)
+    r_z = math.radians(r_z)
     
     matrix_transform = glm.mat4(1.0) # instanciando uma matriz identidade
-       
+    
     # aplicando translacao (terceira operação a ser executada)
     matrix_transform = glm.translate(matrix_transform, glm.vec3(t_x, t_y, t_z))    
     
     # aplicando rotacao (segunda operação a ser executada)
-    if angle!=0:
-        matrix_transform = glm.rotate(matrix_transform, angle, glm.vec3(r_x, r_y, r_z))
+    # ordem: Y -> X -> Z (para evitar gimbal lock)
+    matrix_transform = glm.rotate(matrix_transform, r_z, [0, 0, 1])
+    matrix_transform = glm.rotate(matrix_transform, r_x, [1, 0, 0])
+    matrix_transform = glm.rotate(matrix_transform, r_y, [0, 1, 0])
     
     # aplicando escala (primeira operação a ser executada)
     matrix_transform = glm.scale(matrix_transform, glm.vec3(s_x, s_y, s_z))
@@ -85,3 +90,126 @@ def setup_texture_buffer(program, textures_list):
     glEnableVertexAttribArray(loc)
     glVertexAttribPointer(loc, 2, GL_FLOAT, False, stride, offset)
     return buffer
+
+# Variáveis para controle de objetos
+velocidade_movimento = 0.5  # Velocidade de translação
+velocidade_rotacao = 5.0    # Velocidade de rotação em graus
+velocidade_escala = 0.1     # Velocidade de escala
+
+# Objetos específicos para manipulação
+objeto_translacao = None  # O objeto que será transladado
+objeto_rotacao = None     # O objeto que será rotacionado
+objeto_escala = None      # O objeto que será escalado
+
+def configurar_objetos_manipulaveis(obj_translacao, obj_rotacao, obj_escala):
+    """Define quais objetos serão manipulados por translação, rotação e escala"""
+    global objeto_translacao, objeto_rotacao, objeto_escala
+    objeto_translacao = obj_translacao
+    objeto_rotacao = obj_rotacao
+    objeto_escala = obj_escala
+
+def objeto_key_event(window, key, scancode, action, mods):
+    """Callback para tratar eventos de teclado relacionados aos objetos"""
+    global velocidade_movimento, velocidade_rotacao, velocidade_escala
+    velocidade_movimento = 0.5  # Velocidade de translação
+    
+    # Só processa teclas quando são pressionadas ou mantidas pressionadas
+    if action != glfw.PRESS and action != glfw.REPEAT:
+        return
+    
+    # TRANSLAÇÃO - Controlada pelas setas direcionais
+    if objeto_translacao:
+        x, y, z = objeto_translacao.position
+        
+    if key == glfw.KEY_RIGHT:
+        z -= velocidade_movimento
+    elif key == glfw.KEY_LEFT:
+        z += velocidade_movimento
+    
+    # Mover objeto no eixo Y
+    elif key == glfw.KEY_UP:
+        if mods & glfw.MOD_SHIFT:  # Shift+Up para mover para cima
+            y += velocidade_movimento
+        else:  # Up sem Shift para mover para frente (eixo Z)
+            print("foi")
+            x -= velocidade_movimento
+    elif key == glfw.KEY_DOWN:
+        if mods & glfw.MOD_SHIFT:  # Shift+Down para mover para baixo
+            y -= velocidade_movimento
+        else:  # Down sem Shift para mover para trás (eixo Z)
+            x += velocidade_movimento
+    
+    objeto_translacao.set_position(x, y, z)
+    
+    # ROTAÇÃO
+    if objeto_rotacao:
+        r_x, r_y, r_z = objeto_rotacao.rotation
+        
+        # Rotação em torno do eixo X
+        if key == glfw.KEY_Y:
+            # angulo += 1
+            r_x += 1
+        elif key == glfw.KEY_H:
+            # angulo -= 1
+            r_x -= 1
+        
+        # Rotação em torno do eixo Y
+        elif key == glfw.KEY_U:
+            # angulo += 1
+            r_y += 1
+        elif key == glfw.KEY_J:
+            # angulo -= 1
+            r_y -= 1
+        
+        # # Rotação em torno do eixo Z
+        elif key == glfw.KEY_I:
+            # angulo += 1
+            r_z += 1
+
+        elif key == glfw.KEY_K:
+            # angulo -= 1
+            r_z -= 1
+        
+    objeto_rotacao.set_rotation(r_x, r_y, r_z)
+    
+    # ESCALA - Controlada pelas teclas S + setas
+    if objeto_escala:
+        sx, sy, sz = objeto_escala.scale
+        
+        # Escala no eixo X
+        if key == glfw.KEY_Z:  # Aumenta X
+            sx += velocidade_escala
+        elif key == glfw.KEY_X:  # Diminui X
+            sx = max(0.1, sx - velocidade_escala)
+        
+        # Escala no eixo Y
+        elif key == glfw.KEY_C:  # Aumenta Y
+            sy += velocidade_escala
+        elif key == glfw.KEY_V:  # Diminui Y
+            sy = max(0.1, sy - velocidade_escala)
+        
+        # Escala no eixo Z
+        elif key == glfw.KEY_B:  # Aumenta Z
+            sz += velocidade_escala
+        elif key == glfw.KEY_N:  # Diminui Z
+            sz = max(0.1, sz - velocidade_escala)
+
+        # Escala uniforme (todos os eixos)
+        elif key == glfw.KEY_EQUAL or key == glfw.KEY_KP_ADD:  # Aumenta todos
+            sx += velocidade_escala
+            sy += velocidade_escala
+            sz += velocidade_escala
+        elif key == glfw.KEY_MINUS or key == glfw.KEY_KP_SUBTRACT:  # Diminui todos
+            sx = max(0.1, sx - velocidade_escala)
+            sy = max(0.1, sy - velocidade_escala)
+            sz = max(0.1, sz - velocidade_escala)
+        
+        objeto_escala.set_scale(sx, sy, sz)
+
+def combine_callbacks(*callbacks):
+    """Combina múltiplos callbacks em um único"""
+    def combined_callback(window, key, scancode, action, mods):
+        for callback in callbacks:
+            if callback:
+                callback(window, key, scancode, action, mods)
+    return combined_callback
