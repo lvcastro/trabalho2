@@ -3,7 +3,7 @@ import loaders
 from core import utils
 
 class Object3D:
-    def __init__(self, obj_file=None, texture_file=None):
+    def __init__(self, obj_file=None, texture_file=None, cor=None):
         self.verticeInicial = 0
         self.quantosVertices = 0
         self.texture_id = None
@@ -12,6 +12,7 @@ class Object3D:
         self.scale = [1.0, 1.0, 1.0]  # escala x, y, z
         self.obj_file = obj_file
         self.texture_file = texture_file
+        self.cor = cor
 
     def carregar_objeto(self, vertices_list, textures_coord_list):
         self.verticeInicial, self.quantosVertices, self.texture_id = loaders.load_obj_and_texture(
@@ -41,9 +42,18 @@ class Object3D:
         loc_model = glGetUniformLocation(program, "model")
         glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
         
-        # Usa a textura específica deste objeto
-        if self.texture_id is not None:
+        # Configura o uso de textura ou cor sólida
+        loc_usar_textura = glGetUniformLocation(program, "usarTextura")
+        
+        if self.texture_id is not None and self.cor is None:
+            # Usa textura
+            glUniform1i(loc_usar_textura, GL_TRUE)  # Habilita textura no shader
             glBindTexture(GL_TEXTURE_2D, self.texture_id)
+        else:
+            # Usa cor sólida
+            loc_color = glGetUniformLocation(program, "color")
+            glUniform1i(loc_usar_textura, GL_FALSE)  # Desabilita textura no shader
+            glUniform4f(loc_color, *self.cor, 1.0)
             
         # Desenha o objeto
         glDrawArrays(GL_TRIANGLES, self.verticeInicial, self.quantosVertices)
@@ -80,7 +90,7 @@ class Chao(Object3D):
     def __init__(self):
             super().__init__(
                 obj_file='objetos/chao/chao.obj', 
-                texture_file='objetos/banco/benchs_specular.jpg'
+                cor=[0.6, 0.6, 0.6]  # Cor cinza para o chão
             )
 
 class Placa(Object3D):
@@ -97,9 +107,9 @@ class Skybox(Object3D):
                 texture_file='objetos/skybox/skybox.png'
             )
 
-# class Quarto(Object3D):
-#     def __init__(self):
-#         super().__init__(
-#             obj_file='objetos/quarto/quarto.obj'
-#         )
-#     def desenhar(self)
+class Quarto(Object3D):
+    def __init__(self):
+        super().__init__(
+            obj_file='objetos/quarto/quarto.obj',
+            cor=[0.9, 0.85, 0.7]  # Cor bege claro para o quarto
+        )

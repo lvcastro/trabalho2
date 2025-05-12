@@ -52,7 +52,7 @@ mesa.set_scale(6, 6, 6)
 
 banco = obj.Banco()
 banco.carregar_objeto(vertices_list, textures_coord_list)
-banco.set_position(-4.0, 0.0, -20)
+banco.set_position(-4.0, 0.0, -20.0)
 
 placa = obj.Placa()
 placa.carregar_objeto(vertices_list, textures_coord_list)
@@ -61,11 +61,15 @@ placa.set_scale(0.05, 0.05, 0.05)
 
 chao = obj.Chao()
 chao.carregar_objeto(vertices_list, textures_coord_list)
-chao.set_position(0.0, -4.0, -20)
+chao.set_position(0.0, -4.0, -20.0)
 
 skybox = obj.Skybox()
 skybox.carregar_objeto(vertices_list, textures_coord_list)
-skybox.set_position(0.0, 8.0, -20)
+skybox.set_position(0.0, 8.0, -20.0)
+
+# quarto = obj.Quarto()
+# quarto.carregar_objeto(vertices_list, textures_coord_list)
+# quarto.set_position(0.0, 0.0, -10.0)
 
 # %%
 # BUFFERS DE VERTICE E TEXTURA
@@ -109,6 +113,7 @@ while not glfw.window_should_close(window):
     chao.desenhar(program)
     placa.desenhar(program)
     skybox.desenhar(program)
+    # quarto.desenhar(program)
     
     mat_view = camera.view()
     loc_view = glGetUniformLocation(program, "view")
