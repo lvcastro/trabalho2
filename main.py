@@ -35,41 +35,44 @@ textures_coord_list = []
 
 # %%
 # CARREGA OBJETOS
+casa = obj.Casa()
+casa.carregar_objeto(vertices_list, textures_coord_list)
+casa.set_position(0.0, -2.0, 0.0)
+casa.set_scale(5, 5, 5)
+
 cama = obj.Cama()
 cama.carregar_objeto(vertices_list, textures_coord_list)
-cama.set_position(2.0, 0.0, -20.0)
-cama.set_rotation(-90, 0, 1, 0)
-
-relogio = obj.Relogio()
-relogio.carregar_objeto(vertices_list, textures_coord_list)
-relogio.set_position(-2.2, 2.5, -18.5)
-relogio.set_scale(0.25, 0.25, 0.25)
+cama.set_position(-7.0, -0.5, 0.0)
+cama.set_scale(0.75, 0.75, 0.75)
 
 mesa = obj.Mesa()
 mesa.carregar_objeto(vertices_list, textures_coord_list)
-mesa.set_position(-2.2, 0.0, -18.5)
-mesa.set_scale(6, 6, 6)
+mesa.set_position(-6.0, -0.5, 3.0)
+mesa.set_scale(4, 4, 4)
+mesa.set_rotation(90, 0, 1, 0)
 
-banco = obj.Banco()
-banco.carregar_objeto(vertices_list, textures_coord_list)
-banco.set_position(-4.0, 0.0, -20.0)
+relogio = obj.Relogio()
+relogio.carregar_objeto(vertices_list, textures_coord_list)
+relogio.set_position(-6.0, 1.25, 3.0)
+relogio.set_scale(0.1, 0.1, 0.1)
+relogio.set_rotation(90, 0, 1, 0)
 
-placa = obj.Placa()
-placa.carregar_objeto(vertices_list, textures_coord_list)
-placa.set_position(-4.0, 0.0, -10)
-placa.set_scale(0.05, 0.05, 0.05)
+# banco = obj.Banco()
+# banco.carregar_objeto(vertices_list, textures_coord_list)
+# banco.set_position(-4.0, 0.0, -20.0)
 
-chao = obj.Chao()
-chao.carregar_objeto(vertices_list, textures_coord_list)
-chao.set_position(0.0, -4.0, -20.0)
+# placa = obj.Placa()
+# placa.carregar_objeto(vertices_list, textures_coord_list)
+# placa.set_position(-4.0, 0.0, -10)
+# placa.set_scale(0.05, 0.05, 0.05)
 
-skybox = obj.Skybox()
-skybox.carregar_objeto(vertices_list, textures_coord_list)
-skybox.set_position(0.0, 8.0, -20.0)
+# chao = obj.Chao()
+# chao.carregar_objeto(vertices_list, textures_coord_list)
+# chao.set_position(0.0, -4.0, -20.0)
 
-# quarto = obj.Quarto()
-# quarto.carregar_objeto(vertices_list, textures_coord_list)
-# quarto.set_position(0.0, 0.0, -10.0)
+# skybox = obj.Skybox()
+# skybox.carregar_objeto(vertices_list, textures_coord_list)
+# skybox.set_position(0.0, 8.0, -20.0)
 
 # %%
 # BUFFERS DE VERTICE E TEXTURA
@@ -107,13 +110,13 @@ while not glfw.window_should_close(window):
     
     # DESENHA OBJETOS
     cama.desenhar(program)
-    relogio.desenhar(program)
     mesa.desenhar(program)
-    banco.desenhar(program)
-    chao.desenhar(program)
-    placa.desenhar(program)
-    skybox.desenhar(program)
-    # quarto.desenhar(program)
+    relogio.desenhar(program)
+    # banco.desenhar(program)
+    # chao.desenhar(program)
+    # placa.desenhar(program)
+    # skybox.desenhar(program)
+    casa.desenhar(program)
     
     mat_view = camera.view()
     loc_view = glGetUniformLocation(program, "view")

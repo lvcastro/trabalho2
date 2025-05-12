@@ -107,9 +107,16 @@ class Skybox(Object3D):
                 texture_file='objetos/skybox/skybox.png'
             )
 
-class Quarto(Object3D):
+class Casa(Object3D):
     def __init__(self):
         super().__init__(
-            obj_file='objetos/quarto/quarto.obj',
-            cor=[0.9, 0.85, 0.7]  # Cor bege claro para o quarto
+            obj_file='objetos/casa/casa.obj', 
+            texture_file='objetos/casa/Diffuse.png'
         )
+
+# class Quarto(Object3D):
+#     def __init__(self):
+#         super().__init__(
+#             obj_file='objetos/quarto/quarto.obj',
+#             cor=[0.9, 0.85, 0.7]  # Cor bege claro para o quarto
+#         )
