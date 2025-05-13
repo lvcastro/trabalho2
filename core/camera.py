@@ -44,6 +44,12 @@ class Camera:
             
         if key == glfw.KEY_D and (action == glfw.PRESS or action == glfw.REPEAT):
             self.cameraPos += glm.normalize(glm.cross(self.cameraFront, self.cameraUp)) * cameraSpeed
+        
+        print(f"cameraPos: {self.cameraPos}")
+
+        self.cameraPos.x = max(-40.0, min(40.0, self.cameraPos.x))
+        self.cameraPos.z = max(-40.0, min(40.0, self.cameraPos.z))
+        self.cameraPos.y = max(-1.0, self.cameraPos.y)  # evita que entre no chão
 
     # glfw: whenever the mouse moves, this callback is called
     # -------------------------------------------------------

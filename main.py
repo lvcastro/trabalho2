@@ -64,7 +64,7 @@ chao = obj.Chao()
 chao.carregar_objeto(vertices_list, textures_coord_list)
 chao.set_position(0.0, -2.0, 0.0)
 chao.set_rotation(90, 0, 0)
-chao.set_scale(100, 100, 100)
+chao.set_scale(100, 100, 1)
 
 banco = obj.Banco()
 banco.carregar_objeto(vertices_list, textures_coord_list)
