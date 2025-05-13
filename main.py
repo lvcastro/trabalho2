@@ -44,21 +44,20 @@ casa.set_rotation(0, 90, 0)
 
 cama = obj.Cama()
 cama.carregar_objeto(vertices_list, textures_coord_list)
-cama.set_position(-7.0, -0.5, 0.0)
-cama.set_scale(0.75, 0.75, 0.75)
+cama.set_position(-5.5, -1.0, 0.0)
+cama.set_scale(2.5, 2.5, 2.5)
+cama.set_rotation(0, 90, 0)
 
 mesa = obj.Mesa()
 mesa.carregar_objeto(vertices_list, textures_coord_list)
-mesa.set_position(-6.0, -0.5, 3.0)
+mesa.set_position(-7.0, -0.8, 3.2)
 mesa.set_scale(4, 4, 4)
-# mesa.set_rotation(90, 0, 1, 0)
 mesa.set_rotation(0, 90, 0)
+
 relogio = obj.Relogio()
 relogio.carregar_objeto(vertices_list, textures_coord_list)
-relogio.set_position(-6.0, 1.25, 3.0)
-relogio.set_scale(0.1, 0.1, 0.1)
-# relogio.set_rotation(90, 0, 1, 0)
-relogio.set_rotation(0, 90, 0)
+relogio.set_position(-7.0, 1.1, 3.2)
+relogio.set_scale(0.09, 0.09, 0.09)
 
 chao = obj.Chao()
 chao.carregar_objeto(vertices_list, textures_coord_list)
@@ -97,9 +96,9 @@ glBindBuffer(GL_ARRAY_BUFFER, 0)
 glBindVertexArray(0)
 
 # %%
-utils.configurar_objetos_manipulaveis(
+utils.definir_objetos_manipulaveis(
     obj_translacao=cama,    # Objeto que será movido
-    obj_rotacao=bicicleta,    # Objeto que será rotacionado 
+    obj_rotacao=relogio,    # Objeto que será rotacionado 
     obj_escala=mesa         # Objeto que será escalado
 )
 # CRIA A CAMERA
@@ -122,6 +121,10 @@ glfw.show_window(window)
 glEnable(GL_DEPTH_TEST) ### importante para 3D
    
 while not glfw.window_should_close(window):
+    if camera.malha:
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+    else:
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
 
     currentFrame = glfw.get_time()
     camera.deltaTime = currentFrame - camera.lastFrame
@@ -130,7 +133,6 @@ while not glfw.window_should_close(window):
     glfw.poll_events()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glClearColor(1.0, 1.0, 1.0, 1.0)
-    glPolygonMode(GL_FRONT_AND_BACK,GL_FILL)
     
     # DESENHA OBJETOS
     casa.desenhar(program)

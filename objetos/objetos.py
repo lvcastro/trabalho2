@@ -61,15 +61,15 @@ class Object3D:
 class Cama(Object3D):
     def __init__(self):
         super().__init__(
-            obj_file='objetos/cama/cama.obj',
-            texture_file='objetos/cama/Fabric_D.jpg'
+            obj_file='objetos/cama/Maya_Bed.obj',
+            texture_file='objetos/cama/cama.jpg'
         )
 
 class Relogio(Object3D):
     def __init__(self):
         super().__init__(
-            obj_file='objetos/relogio/relogio.obj', 
-            texture_file='objetos/relogio/Texture_Diff.png'
+            obj_file='objetos/relogio/relogio2.obj', 
+            texture_file='objetos/relogio/relogio2.png'
         )
 
 class Mesa(Object3D):
@@ -104,7 +104,8 @@ class Skybox(Object3D):
     def __init__(self):
             super().__init__(
                 obj_file='objetos/skybox/skybox.obj', 
-                texture_file='objetos/skybox/skybox.png'
+                # texture_file='objetos/skybox/skybox3.jpg'
+                cor=[0, 0.6, 1]
             )
 
 class Casa(Object3D):
@@ -125,5 +126,5 @@ class Bicicleta(Object3D):
 #     def __init__(self):
 #         super().__init__(
 #             obj_file='objetos/quarto/quarto.obj',
-#             cor=[0.9, 0.85, 0.7]  # Cor bege claro para o quarto
+            # cor=[0.9, 0.85, 0.7]  # Cor bege claro para o quarto
 #         )

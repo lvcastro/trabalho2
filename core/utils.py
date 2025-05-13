@@ -92,7 +92,7 @@ def setup_texture_buffer(program, textures_list):
     return buffer
 
 # Variáveis para controle de objetos
-velocidade_movimento = 0.5  # Velocidade de translação
+velocidade_movimento = 0.1  # Velocidade de translação
 velocidade_rotacao = 5.0    # Velocidade de rotação em graus
 velocidade_escala = 0.1     # Velocidade de escala
 
@@ -101,7 +101,7 @@ objeto_translacao = None  # O objeto que será transladado
 objeto_rotacao = None     # O objeto que será rotacionado
 objeto_escala = None      # O objeto que será escalado
 
-def configurar_objetos_manipulaveis(obj_translacao, obj_rotacao, obj_escala):
+def definir_objetos_manipulaveis(obj_translacao, obj_rotacao, obj_escala):
     """Define quais objetos serão manipulados por translação, rotação e escala"""
     global objeto_translacao, objeto_rotacao, objeto_escala
     objeto_translacao = obj_translacao
@@ -121,22 +121,22 @@ def objeto_key_event(window, key, scancode, action, mods):
     if objeto_translacao:
         x, y, z = objeto_translacao.position
         
+    # Controles no eixo Z
     if key == glfw.KEY_RIGHT:
         z -= velocidade_movimento
     elif key == glfw.KEY_LEFT:
         z += velocidade_movimento
     
-    # Mover objeto no eixo Y
+    # Controles nos eixos Y (com Shift pressionado) e X
     elif key == glfw.KEY_UP:
-        if mods & glfw.MOD_SHIFT:  # Shift+Up para mover para cima
+        if mods & glfw.MOD_SHIFT:
             y += velocidade_movimento
-        else:  # Up sem Shift para mover para frente (eixo Z)
-            print("foi")
+        else:
             x -= velocidade_movimento
     elif key == glfw.KEY_DOWN:
-        if mods & glfw.MOD_SHIFT:  # Shift+Down para mover para baixo
+        if mods & glfw.MOD_SHIFT:
             y -= velocidade_movimento
-        else:  # Down sem Shift para mover para trás (eixo Z)
+        else:
             x += velocidade_movimento
     
     objeto_translacao.set_position(x, y, z)
@@ -147,30 +147,23 @@ def objeto_key_event(window, key, scancode, action, mods):
         
         # Rotação em torno do eixo X
         if key == glfw.KEY_Y:
-            # angulo += 1
-            r_x += 1
+            r_x += velocidade_rotacao
         elif key == glfw.KEY_H:
-            # angulo -= 1
-            r_x -= 1
+            r_x -= velocidade_rotacao
         
         # Rotação em torno do eixo Y
         elif key == glfw.KEY_U:
-            # angulo += 1
-            r_y += 1
+            r_y += velocidade_rotacao
         elif key == glfw.KEY_J:
-            # angulo -= 1
-            r_y -= 1
+            r_y -= velocidade_rotacao
         
         # # Rotação em torno do eixo Z
         elif key == glfw.KEY_I:
-            # angulo += 1
-            r_z += 1
+            r_z += velocidade_rotacao
 
         elif key == glfw.KEY_K:
-            # angulo -= 1
-            r_z -= 1
+            r_z -= velocidade_rotacao
         
-    print(f"{r_x} {r_y} {r_z}")
     objeto_rotacao.set_rotation(r_x, r_y, r_z)
     
     # ESCALA - Controlada pelas teclas S + setas
@@ -181,19 +174,19 @@ def objeto_key_event(window, key, scancode, action, mods):
         if key == glfw.KEY_Z:  # Aumenta X
             sx += velocidade_escala
         elif key == glfw.KEY_X:  # Diminui X
-            sx = max(0.1, sx - velocidade_escala)
+            sx = max(2, sx - velocidade_escala)
         
         # Escala no eixo Y
         elif key == glfw.KEY_C:  # Aumenta Y
             sy += velocidade_escala
         elif key == glfw.KEY_V:  # Diminui Y
-            sy = max(0.1, sy - velocidade_escala)
+            sy = max(2, sy - velocidade_escala)
         
         # Escala no eixo Z
         elif key == glfw.KEY_B:  # Aumenta Z
             sz += velocidade_escala
         elif key == glfw.KEY_N:  # Diminui Z
-            sz = max(0.1, sz - velocidade_escala)
+            sz = max(2, sz - velocidade_escala)
 
         # Escala uniforme (todos os eixos)
         elif key == glfw.KEY_EQUAL or key == glfw.KEY_KP_ADD:  # Aumenta todos
@@ -201,11 +194,21 @@ def objeto_key_event(window, key, scancode, action, mods):
             sy += velocidade_escala
             sz += velocidade_escala
         elif key == glfw.KEY_MINUS or key == glfw.KEY_KP_SUBTRACT:  # Diminui todos
-            sx = max(0.1, sx - velocidade_escala)
-            sy = max(0.1, sy - velocidade_escala)
-            sz = max(0.1, sz - velocidade_escala)
+            sx = max(2, sx - velocidade_escala)
+            sy = max(2, sy - velocidade_escala)
+            sz = max(2, sz - velocidade_escala)
         
         objeto_escala.set_scale(sx, sy, sz)
+
+# def mostrar_malha():
+#     meshes = 0
+#     if key == glfw.KEY_P and action == glfw.PRESS:
+#         if self.meshes == 0:
+#             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+#             self.meshes = 1
+#         else:
+#             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
+#             self.meshes = 0
 
 def combine_callbacks(*callbacks):
     """Combina múltiplos callbacks em um único"""

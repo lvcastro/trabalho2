@@ -7,6 +7,7 @@ class Camera:
         self.cameraPos   = glm.vec3(6.0, 4.5, 0.0)
         # self.cameraFront = glm.vec3(-0.95, -0.3, 0.0) # tanto faz o valor aqui, já que ele vai ser alterado depois a partir da posição do mouse na cena.
         self.cameraUp    = glm.vec3(0.0, 1.0, 0.0)
+        self.malha = False
 
         self.firstMouse = True
         self.yaw   = -180.0	# yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
@@ -44,8 +45,10 @@ class Camera:
             
         if key == glfw.KEY_D and (action == glfw.PRESS or action == glfw.REPEAT):
             self.cameraPos += glm.normalize(glm.cross(self.cameraFront, self.cameraUp)) * cameraSpeed
-        
-        print(f"cameraPos: {self.cameraPos}")
+
+        # Alterna modo de visualização da malha com a tecla P
+        if key == glfw.KEY_P and action == glfw.PRESS:
+            self.malha = not self.malha
 
         self.cameraPos.x = max(-40.0, min(40.0, self.cameraPos.x))
         self.cameraPos.z = max(-40.0, min(40.0, self.cameraPos.z))
