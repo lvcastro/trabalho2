@@ -91,11 +91,6 @@ def setup_texture_buffer(program, textures_list):
     glVertexAttribPointer(loc, 2, GL_FLOAT, False, stride, offset)
     return buffer
 
-# Variáveis para controle de objetos
-velocidade_movimento = 0.1  # Velocidade de translação
-velocidade_rotacao = 5.0    # Velocidade de rotação em graus
-velocidade_escala = 0.1     # Velocidade de escala
-
 # Objetos específicos para manipulação
 objeto_translacao = None  # O objeto que será transladado
 objeto_rotacao = None     # O objeto que será rotacionado
@@ -110,8 +105,10 @@ def definir_objetos_manipulaveis(obj_translacao, obj_rotacao, obj_escala):
 
 def objeto_key_event(window, key, scancode, action, mods):
     """Callback para tratar eventos de teclado relacionados aos objetos"""
-    global velocidade_movimento, velocidade_rotacao, velocidade_escala
-    velocidade_movimento = 0.5  # Velocidade de translação
+    # Variáveis para controle de objetos
+    velocidade_movimento = 0.1  # Velocidade de translação
+    velocidade_rotacao = 5.0    # Velocidade de rotação em graus
+    velocidade_escala = 0.1     # Velocidade de escala
     
     # Só processa teclas quando são pressionadas ou mantidas pressionadas
     if action != glfw.PRESS and action != glfw.REPEAT:

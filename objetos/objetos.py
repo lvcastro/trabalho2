@@ -64,6 +64,43 @@ class Cama(Object3D):
             obj_file='objetos/cama/Maya_Bed.obj',
             texture_file='objetos/cama/cama.jpg'
         )
+        # Define os limites da casa onde a cama pode ser posicionada
+        self.limites_casa = {
+            'min_x': -6.5,  # Ajuste conforme as dimensões da sua casa
+            'max_x': 6.5,
+            'min_z': -6.5,
+            'max_z': 6.5,
+            'min_y': -1.0,
+            'max_y': 4.0
+        }
+        
+        # Dimensões aproximadas da cama
+        self.dimensoes_cama = {
+            'largura': 2.0,  # Largura da cama (eixo X)
+            'altura': 1.0, # Altura da cama (eixo Y)
+            'comprimento': 3.0   # Comprimento da cama (eixo Z)
+        }
+    
+    def set_position(self, x, y, z):
+        # Calcula as bordas da cama considerando sua posição e dimensões
+        meia_largura = self.dimensoes_cama['largura'] / 2
+        meio_comprimento = self.dimensoes_cama['comprimento'] / 2
+        
+        # Limita as coordenadas x e z para manter a cama dentro da casa
+        limited_x = max(self.limites_casa['min_x'] + meia_largura, 
+                      min(self.limites_casa['max_x'] - meia_largura, x))
+        
+        limited_y = max(self.limites_casa['min_y'], 
+                      min(self.limites_casa['max_y'], y))
+        
+        limited_z = max(self.limites_casa['min_z'] + meio_comprimento, 
+                      min(self.limites_casa['max_z'] - meio_comprimento, z))
+        
+        # Atualiza a posição com os valores limitados
+        self.position = [limited_x, limited_y, limited_z]
+        
+        # Retorna se a posição foi limitada (True se foi alterada)
+        return x != limited_x or z != limited_z
 
 class Relogio(Object3D):
     def __init__(self):
@@ -104,8 +141,8 @@ class Skybox(Object3D):
     def __init__(self):
             super().__init__(
                 obj_file='objetos/skybox/skybox.obj', 
-                # texture_file='objetos/skybox/skybox3.jpg'
-                cor=[0, 0.6, 1]
+                texture_file='objetos/skybox/ceu.png'
+                # cor=[0.0667, 0.9294, 0.9098]
             )
 
 class Casa(Object3D):
