@@ -33,30 +33,6 @@ global vertices_list
 vertices_list = []    
 global textures_coord_list
 textures_coord_list = []
-eixos_vertices = np.array([
-    # eixo X (vermelho)
-    # 0.0, 0.0, 0.0,
-    # 5.0, 0.0, 0.0,
-
-    # eixo Y (verde)
-    0.0, 0.0, 0.0,
-    0.0, 5.0, 0.0,
-
-    # eixo Z (azul)
-    0.0, 0.0, 0.0,
-    0.0, 0.0, 5.0,
-], dtype=np.float32)
-
-eixos_cores = np.array([
-    1, 0, 0, 1,  # vermelho para X
-    1, 0, 0, 1,
-
-    0, 1, 0, 1,  # verde para Y
-    0, 1, 0, 1,
-
-    0, 0, 1, 1,  # azul para Z
-    0, 0, 1, 1,
-], dtype=np.float32)
 # %%
 # CARREGA OBJETOS
 casa = obj.Casa()
@@ -84,46 +60,38 @@ relogio.set_scale(0.1, 0.1, 0.1)
 # relogio.set_rotation(90, 0, 1, 0)
 relogio.set_rotation(0, 90, 0)
 
-# banco = obj.Banco()
-# banco.carregar_objeto(vertices_list, textures_coord_list)
-# banco.set_position(-4.0, 0.0, -20.0)
+chao = obj.Chao()
+chao.carregar_objeto(vertices_list, textures_coord_list)
+chao.set_position(0.0, -2.0, 0.0)
+chao.set_rotation(90, 0, 0)
+chao.set_scale(100, 100, 100)
 
-# placa = obj.Placa()
-# placa.carregar_objeto(vertices_list, textures_coord_list)
-# placa.set_position(-4.0, 0.0, -10)
-# placa.set_scale(0.05, 0.05, 0.05)
+banco = obj.Banco()
+banco.carregar_objeto(vertices_list, textures_coord_list)
+banco.set_position(0.0, -1.0, -20.0)
+banco.set_scale(0.05, 0.05, 0.05)
 
-# chao = obj.Chao()
-# chao.carregar_objeto(vertices_list, textures_coord_list)
-# chao.set_position(0.0, -4.0, -20.0)
+placa = obj.Placa()
+placa.carregar_objeto(vertices_list, textures_coord_list)
+placa.set_position(-10.0, -2.0, -20.0)
+placa.set_scale(0.025, 0.025, 0.025)
+placa.set_rotation(-90, 0, 0)
 
-# skybox = obj.Skybox()
-# skybox.carregar_objeto(vertices_list, textures_coord_list)
-# skybox.set_position(0.0, 8.0, -20.0)
+skybox = obj.Skybox()
+skybox.carregar_objeto(vertices_list, textures_coord_list)
+skybox.set_position(0.0, 0.0, 0.0)
+skybox.set_scale(40, 40, 40)
+
+bicicleta = obj.Bicicleta()
+bicicleta.carregar_objeto(vertices_list, textures_coord_list)
+bicicleta.set_position(6.8, -2.0, -9.1)
+bicicleta.set_rotation(-80, 0, 0)
+bicicleta.set_scale(0.075, 0.075, 0.075)
 
 # %%
 # BUFFERS DE VERTICE E TEXTURA
 utils.setup_vertex_buffer(program, vertices_list)
 utils.setup_texture_buffer(program, textures_coord_list)
-
-### APAGAR DEPOIS
-# CRIAÇÃO DOS BUFFERS DOS EIXOS
-eixos_vao = glGenVertexArrays(1)
-glBindVertexArray(eixos_vao)
-
-# VBO dos vértices dos eixos
-eixos_vbo_vertices = glGenBuffers(1)
-glBindBuffer(GL_ARRAY_BUFFER, eixos_vbo_vertices)
-glBufferData(GL_ARRAY_BUFFER, eixos_vertices.nbytes, eixos_vertices, GL_STATIC_DRAW)
-glEnableVertexAttribArray(0)  # layout location 0 (posição)
-glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, None)
-
-# VBO das cores dos eixos
-eixos_vbo_cores = glGenBuffers(1)
-glBindBuffer(GL_ARRAY_BUFFER, eixos_vbo_cores)
-glBufferData(GL_ARRAY_BUFFER, eixos_cores.nbytes, eixos_cores, GL_STATIC_DRAW)
-glEnableVertexAttribArray(1)  # layout location 1 (cor)
-glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, None)
 
 glBindBuffer(GL_ARRAY_BUFFER, 0)
 glBindVertexArray(0)
@@ -131,7 +99,7 @@ glBindVertexArray(0)
 # %%
 utils.configurar_objetos_manipulaveis(
     obj_translacao=cama,    # Objeto que será movido
-    obj_rotacao=relogio,    # Objeto que será rotacionado 
+    obj_rotacao=bicicleta,    # Objeto que será rotacionado 
     obj_escala=mesa         # Objeto que será escalado
 )
 # CRIA A CAMERA
@@ -165,17 +133,15 @@ while not glfw.window_should_close(window):
     glPolygonMode(GL_FRONT_AND_BACK,GL_FILL)
     
     # DESENHA OBJETOS
+    casa.desenhar(program)
     cama.desenhar(program)
     mesa.desenhar(program)
     relogio.desenhar(program)
-    # banco.desenhar(program)
-    # chao.desenhar(program)
-    # placa.desenhar(program)
-    # skybox.desenhar(program)
-    casa.desenhar(program)
-    # glBindVertexArray(eixos_vao)
-    # glDrawArrays(GL_LINES, 0, 6)
-    # glBindVertexArray(0)
+    banco.desenhar(program)
+    chao.desenhar(program)
+    placa.desenhar(program)
+    bicicleta.desenhar(program)
+    skybox.desenhar(program)
     
     mat_view = camera.view()
     loc_view = glGetUniformLocation(program, "view")

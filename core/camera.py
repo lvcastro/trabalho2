@@ -4,16 +4,23 @@ import numpy as np
 
 class Camera:
     def __init__(self, largura, altura):
-        self.cameraPos   = glm.vec3(0.0, 5.0, -3.0)
-        self.cameraFront = glm.vec3(0.0, 0.0, 0.0) # tanto faz o valor aqui, já que ele vai ser alterado depois a partir da posição do mouse na cena.
+        self.cameraPos   = glm.vec3(6.0, 4.5, 0.0)
+        # self.cameraFront = glm.vec3(-0.95, -0.3, 0.0) # tanto faz o valor aqui, já que ele vai ser alterado depois a partir da posição do mouse na cena.
         self.cameraUp    = glm.vec3(0.0, 1.0, 0.0)
 
         self.firstMouse = True
-        self.yaw   = -90.0	# yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
-        self.pitch =  0.0
+        self.yaw   = -180.0	# yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
+        self.pitch =  -20.0
         self.lastX =  largura / 2.0
         self.lastY =  altura / 2.0
         self.fov   =  45.0
+
+        # Calcular o cameraFront inicial com base nos valores iniciais de yaw e pitch
+        front = glm.vec3()
+        front.x = glm.cos(glm.radians(self.yaw)) * glm.cos(glm.radians(self.pitch))
+        front.y = glm.sin(glm.radians(self.pitch))
+        front.z = glm.sin(glm.radians(self.yaw)) * glm.cos(glm.radians(self.pitch))
+        self.cameraFront = glm.normalize(front)
 
         # timing
         self.deltaTime = 0.0	# time between current frame and last frame
@@ -44,10 +51,10 @@ class Camera:
         # global cameraFront, lastX, lastY, firstMouse, yaw, pitch
     
         if (self.firstMouse):
-
             self.lastX = xpos
             self.lastY = ypos
             self.firstMouse = False
+            return
 
         xoffset = xpos - self.lastX
         yoffset = self.lastY - ypos # reversed since y-coordinates go from bottom to top

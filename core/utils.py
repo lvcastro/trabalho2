@@ -170,6 +170,7 @@ def objeto_key_event(window, key, scancode, action, mods):
             # angulo -= 1
             r_z -= 1
         
+    print(f"{r_x} {r_y} {r_z}")
     objeto_rotacao.set_rotation(r_x, r_y, r_z)
     
     # ESCALA - Controlada pelas teclas S + setas

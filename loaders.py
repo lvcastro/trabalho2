@@ -70,14 +70,25 @@ def load_obj_and_texture(objFile, texturesList, vertices_list, textures_coord_li
     verticeInicial = len(vertices_list)
     print('Processando modelo {}. Vertice inicial: {}'.format(objFile, len(vertices_list)))
     faces_visited = []
+
+    # Define o fator de repetição dependendo do nome do arquivo
+    if "chao" in objFile.lower():
+        REPETICAO_UV = 100.0  # ou outro valor proporcional ao seu scale
+    else:
+        REPETICAO_UV = 1.0  # objetos normais continuam com UVs normais
+
     for face in modelo['faces']:
         if face[2] not in faces_visited:
             faces_visited.append(face[2])
         for vertice_id in utils.circular_sliding_window_of_three(face[0]):
             vertices_list.append(modelo['vertices'][vertice_id - 1])
         for texture_id in utils.circular_sliding_window_of_three(face[1]):
-            textures_coord_list.append(modelo['texture'][texture_id - 1])
-        
+            uv = modelo['texture'][texture_id - 1]
+            # Aplica o fator de repetição apenas se for o chão
+            u = float(uv[0]) * REPETICAO_UV
+            v = float(uv[1]) * REPETICAO_UV
+            textures_coord_list.append([u, v])
+    
     verticeFinal = len(vertices_list)
     print('Processando modelo {}. Vertice final: {}'.format(objFile, len(vertices_list)))
     
@@ -86,10 +97,3 @@ def load_obj_and_texture(objFile, texturesList, vertices_list, textures_coord_li
         texture_id = load_texture_from_file(texturesList[0])
 
     return verticeInicial, verticeFinal - verticeInicial, texture_id
-
-    # ### carregando textura equivalente e definindo um id (buffer): use um id por textura!
-    # if texturesList:
-    #     for id in range(len(texturesList)):
-    #         load_texture_from_file(id,texturesList[id])
-    
-    return verticeInicial, verticeFinal - verticeInicial

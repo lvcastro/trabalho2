@@ -90,7 +90,7 @@ class Chao(Object3D):
     def __init__(self):
             super().__init__(
                 obj_file='objetos/chao/chao.obj', 
-                cor=[0.6, 0.6, 0.6]  # Cor cinza para o chão
+                texture_file='objetos/chao/grama.jpg'
             )
 
 class Placa(Object3D):
@@ -112,6 +112,13 @@ class Casa(Object3D):
         super().__init__(
             obj_file='objetos/casa/casa.obj', 
             texture_file='objetos/casa/Diffuse.png'
+        )
+
+class Bicicleta(Object3D):
+    def __init__(self):
+        super().__init__(
+            obj_file='objetos/bicicleta/bicicleta.obj', 
+            texture_file='objetos/bicicleta/bicicleta.jpg'
         )
 
 # class Quarto(Object3D):
