@@ -61,39 +61,50 @@ def load_texture_from_file(img_textura):
     image_data = img.tobytes("raw", "RGB", 0, -1)
     #image_data = np.array(list(img.getdata()), np.uint8)
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, img_width, img_height, 0, GL_RGB, GL_UNSIGNED_BYTE, image_data)
+    # print("TEXTURE ID: ",texture_id)
     return texture_id
 
-def load_obj_and_texture(objFile, texturesList, vertices_list, textures_coord_list):
+def load_obj_and_texture(objFile, material_to_texture, vertices_list, textures_coord_list):
     modelo = load_model_from_file(objFile)
     
-    ### inserindo vertices do modelo no vetor de vertices
-    verticeInicial = len(vertices_list)
-    print('Processando modelo {}. Vertice inicial: {}'.format(objFile, len(vertices_list)))
-    faces_visited = []
+    print(f'Processando modelo {objFile}.')
 
-    # Define o fator de repetição dependendo do nome do arquivo
-    if "chao" in objFile.lower():
-        REPETICAO_UV = 100.0  # ou outro valor proporcional ao seu scale
-    else:
-        REPETICAO_UV = 1.0  # objetos normais continuam com UVs normais
-
+    objetos_por_material = {}
+    
+    # Agrupar faces por material
     for face in modelo['faces']:
-        if face[2] not in faces_visited:
-            faces_visited.append(face[2])
-        for vertice_id in utils.circular_sliding_window_of_three(face[0]):
-            vertices_list.append(modelo['vertices'][vertice_id - 1])
-        for texture_id in utils.circular_sliding_window_of_three(face[1]):
-            uv = modelo['texture'][texture_id - 1]
-            # Aplica o fator de repetição apenas se for o chão
-            u = float(uv[0]) * REPETICAO_UV
-            v = float(uv[1]) * REPETICAO_UV
-            textures_coord_list.append([u, v])
+        mat = face[2] or "default"
+        if mat not in objetos_por_material:
+            objetos_por_material[mat] = []
+        objetos_por_material[mat].append(face)
     
-    verticeFinal = len(vertices_list)
-    print('Processando modelo {}. Vertice final: {}'.format(objFile, len(vertices_list)))
-    
-    texture_id = None
-    if texturesList and len(texturesList) > 0:
-        texture_id = load_texture_from_file(texturesList[0])
+    resultados = []
 
-    return verticeInicial, verticeFinal - verticeInicial, texture_id
+    for material, faces in objetos_por_material.items():
+        vertice_inicial = len(vertices_list)
+        # print(f'Material {material}, vértice inicial: {vertice_inicial}')
+        
+        for face in faces:
+            for vertice_id in utils.circular_sliding_window_of_three(face[0]):
+                vertices_list.append(modelo['vertices'][vertice_id - 1])
+            for texture_id in utils.circular_sliding_window_of_three(face[1]):
+                uv = modelo['texture'][texture_id - 1]
+                u = float(uv[0])
+                v = float(uv[1])
+                textures_coord_list.append([u, v])
+        
+        vertice_final = len(vertices_list)
+        num_vertices = vertice_final - vertice_inicial
+
+        # carrega a textura associada ao material
+        textura_path = material_to_texture.get(material)
+        texture_id = load_texture_from_file(textura_path) if textura_path else None
+
+        resultados.append({
+            'material': material,
+            'vertice_inicial': vertice_inicial,
+            'num_vertices': num_vertices,
+            'texture_id': texture_id
+        })
+    
+    return resultados  # lista de blocos por material

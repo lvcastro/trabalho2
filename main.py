@@ -6,6 +6,7 @@ from core import utils
 from core.camera import Camera
 import objetos.objetos as obj
 import numpy as np
+import loaders
 
 # # %%
 # CRIANDO A JANELA
@@ -39,14 +40,12 @@ casa = obj.Casa()
 casa.carregar_objeto(vertices_list, textures_coord_list)
 casa.set_position(0.0, -2.0, 0.0)
 casa.set_scale(5, 5, 5)
-# casa.set_rotation(90, 0, 1, 0)
 casa.set_rotation(0, 90, 0)
 
 cama = obj.Cama()
 cama.carregar_objeto(vertices_list, textures_coord_list)
-cama.set_position(-5.5, -1.0, 0.0)
-cama.set_scale(2.5, 2.5, 2.5)
-cama.set_rotation(0, 90, 0)
+cama.set_position(-9.0, -1.0, 0.0)
+cama.set_scale(0.75, 0.75, 0.75)
 
 mesa = obj.Mesa()
 mesa.carregar_objeto(vertices_list, textures_coord_list)
@@ -99,7 +98,7 @@ glBindVertexArray(0)
 utils.definir_objetos_manipulaveis(
     obj_translacao=cama,    # Objeto que será movido
     obj_rotacao=relogio,    # Objeto que será rotacionado 
-    obj_escala=mesa         # Objeto que será escalado
+    obj_escala=banco         # Objeto que será escalado
 )
 # CRIA A CAMERA
 camera = Camera(largura, altura)

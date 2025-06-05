@@ -1,0 +1,26 @@
+# Blender 3.6.0 MTL File: 'alarm_clock_blender.blend'
+# www.blender.org
+
+newmtl clock_glass
+Ka 1.000000 1.000000 1.000000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 2
+map_Kd textures/clock_texture_BaseColor.png
+map_Ns textures/clock_texture_Roughness.png
+map_refl textures/clock_texture_Metallic.png
+map_d textures/clock_texture_opacity.png
+map_Bump -bm 1.000000 textures/clock_texture_Normal.png
+
+newmtl clock_texture
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd textures/clock_texture_BaseColor.png
+map_Ns textures/clock_texture_Roughness.png
+map_refl textures/clock_texture_Metallic.png
+map_Bump -bm 1.000000 textures/clock_texture_Normal.png

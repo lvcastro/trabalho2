@@ -18,10 +18,6 @@ def criar_janela(altura, largura):
     glfw.make_context_current(window)
     return window
 
-# def definir_shader():
-#     ourShader = Shader("vertex_shader.vs", "fragment_shader.fs")
-#     ourShader.use()
-
 '''
 É possível encontrar, na Internet, modelos .obj cujas faces não sejam triângulos. Nesses casos, precisamos gerar triângulos a partir dos vértices da face.
 A função abaixo retorna a sequência de vértices que permite isso. Créditos: Hélio Nogueira Cardoso e Danielle Modesti (SCC0650 - 2024/2).
@@ -41,7 +37,6 @@ def framebuffer_size_callback(window, largura, altura):
     glViewport(0, 0, largura, altura)
 
 def model(r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z):
-    # angle = math.radians(angle)
     r_x = math.radians(r_x)
     r_y = math.radians(r_y)
     r_z = math.radians(r_z)
@@ -108,7 +103,8 @@ def objeto_key_event(window, key, scancode, action, mods):
     # Variáveis para controle de objetos
     velocidade_movimento = 0.1  # Velocidade de translação
     velocidade_rotacao = 5.0    # Velocidade de rotação em graus
-    velocidade_escala = 0.1     # Velocidade de escala
+    velocidade_escala = 0.001     # Velocidade de escala
+    escala_minima = 0.05
     
     # Só processa teclas quando são pressionadas ou mantidas pressionadas
     if action != glfw.PRESS and action != glfw.REPEAT:
@@ -142,14 +138,14 @@ def objeto_key_event(window, key, scancode, action, mods):
     if objeto_rotacao:
         r_x, r_y, r_z = objeto_rotacao.rotation
         
-        # Rotação em torno do eixo X
-        if key == glfw.KEY_Y:
-            r_x += velocidade_rotacao
-        elif key == glfw.KEY_H:
-            r_x -= velocidade_rotacao
+        # # Rotação em torno do eixo X
+        # if key == glfw.KEY_Y:
+        #     r_x += velocidade_rotacao
+        # elif key == glfw.KEY_H:
+        #     r_x -= velocidade_rotacao
         
         # Rotação em torno do eixo Y
-        elif key == glfw.KEY_U:
+        if key == glfw.KEY_U:
             r_y += velocidade_rotacao
         elif key == glfw.KEY_J:
             r_y -= velocidade_rotacao
@@ -171,41 +167,31 @@ def objeto_key_event(window, key, scancode, action, mods):
         if key == glfw.KEY_Z:  # Aumenta X
             sx += velocidade_escala
         elif key == glfw.KEY_X:  # Diminui X
-            sx = max(2, sx - velocidade_escala)
+            sx = max(escala_minima, sx - velocidade_escala)
         
         # Escala no eixo Y
-        elif key == glfw.KEY_C:  # Aumenta Y
-            sy += velocidade_escala
-        elif key == glfw.KEY_V:  # Diminui Y
-            sy = max(2, sy - velocidade_escala)
+        # elif key == glfw.KEY_C:  # Aumenta Y
+        #     sy += velocidade_escala
+        # elif key == glfw.KEY_V:  # Diminui Y
+        #     sy = max(escala_minima, sy - velocidade_escala)
         
-        # Escala no eixo Z
-        elif key == glfw.KEY_B:  # Aumenta Z
-            sz += velocidade_escala
-        elif key == glfw.KEY_N:  # Diminui Z
-            sz = max(2, sz - velocidade_escala)
+        # # Escala no eixo Z
+        # elif key == glfw.KEY_B:  # Aumenta Z
+        #     sz += velocidade_escala
+        # elif key == glfw.KEY_N:  # Diminui Z
+        #     sz = max(escala_minima, sz - velocidade_escala)
 
-        # Escala uniforme (todos os eixos)
-        elif key == glfw.KEY_EQUAL or key == glfw.KEY_KP_ADD:  # Aumenta todos
-            sx += velocidade_escala
-            sy += velocidade_escala
-            sz += velocidade_escala
-        elif key == glfw.KEY_MINUS or key == glfw.KEY_KP_SUBTRACT:  # Diminui todos
-            sx = max(2, sx - velocidade_escala)
-            sy = max(2, sy - velocidade_escala)
-            sz = max(2, sz - velocidade_escala)
+        # # Escala uniforme (todos os eixos)
+        # elif key == glfw.KEY_EQUAL or key == glfw.KEY_KP_ADD:  # Aumenta todos
+        #     sx += velocidade_escala
+        #     sy += velocidade_escala
+        #     sz += velocidade_escala
+        # elif key == glfw.KEY_MINUS or key == glfw.KEY_KP_SUBTRACT:  # Diminui todos
+        #     sx = max(escala_minima, sx - velocidade_escala)
+        #     sy = max(escala_minima, sy - velocidade_escala)
+        #     sz = max(escala_minima, sz - velocidade_escala)
         
         objeto_escala.set_scale(sx, sy, sz)
-
-# def mostrar_malha():
-#     meshes = 0
-#     if key == glfw.KEY_P and action == glfw.PRESS:
-#         if self.meshes == 0:
-#             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
-#             self.meshes = 1
-#         else:
-#             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
-#             self.meshes = 0
 
 def combine_callbacks(*callbacks):
     """Combina múltiplos callbacks em um único"""
