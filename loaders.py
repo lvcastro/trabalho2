@@ -4,33 +4,30 @@ import core.utils as utils
 
 def load_model_from_file(filename):
     """Loads a Wavefront OBJ file. """
-    objects = {}
     vertices = []
     texture_coords = []
+    normals = [] # <<< NOVO: Lista para as normais
     faces = []
 
     material = None
 
-    # abre o arquivo obj para leitura
-    for line in open(filename, "r"): ## para cada linha do arquivo .obj
-        if line.startswith('#'): continue ## ignora comentarios
-        values = line.split() # quebra a linha por espaço
+    for line in open(filename, "r"):
+        if line.startswith('#'): continue
+        values = line.split()
         if not values: continue
 
-        ### recuperando vertices
         if values[0] == 'v':
             vertices.append(values[1:4])
-
-        ### recuperando coordenadas de textura
         elif values[0] == 'vt':
             texture_coords.append(values[1:3])
-
-        ### recuperando faces 
+        elif values[0] == 'vn': # <<< NOVO: Lendo as normais
+            normals.append(values[1:4])
         elif values[0] in ('usemtl', 'usemat'):
             material = values[1]
         elif values[0] == 'f':
             face = []
             face_texture = []
+            face_normal = [] # <<< NOVO: Lista para os índices de normal
             for v in values[1:]:
                 w = v.split('/')
                 face.append(int(w[0]))
@@ -38,12 +35,16 @@ def load_model_from_file(filename):
                     face_texture.append(int(w[1]))
                 else:
                     face_texture.append(0)
-
-            faces.append((face, face_texture, material))
+                if len(w) >= 3 and len(w[2]) > 0: # <<< NOVO: Lendo o índice da normal
+                    face_normal.append(int(w[2]))
+                else:
+                    face_normal.append(0)
+            faces.append((face, face_texture, face_normal, material)) # <<< NOVO: Adiciona normais à face
 
     model = {}
     model['vertices'] = vertices
     model['texture'] = texture_coords
+    model['normals'] = normals # <<< NOVO
     model['faces'] = faces
 
     return model
@@ -64,7 +65,8 @@ def load_texture_from_file(img_textura):
     # print("TEXTURE ID: ",texture_id)
     return texture_id
 
-def load_obj_and_texture(objFile, material_to_texture, vertices_list, textures_coord_list):
+def load_obj_and_texture(objFile, material_to_texture, vertices_list, textures_coord_list, normals_list):
+    # load_model_from_file agora retorna normais e faces com 4 elementos
     modelo = load_model_from_file(objFile)
     
     print(f'Processando modelo {objFile}.')
@@ -73,30 +75,57 @@ def load_obj_and_texture(objFile, material_to_texture, vertices_list, textures_c
     
     # Agrupar faces por material
     for face in modelo['faces']:
-        mat = face[2] or "default"
+        # Como a face agora é (vértices, texturas, normais, material), o material está no índice 3
+        mat = face[3] or "default" # <<< ALTERADO: Índice do material mudou de 2 para 3
         if mat not in objetos_por_material:
             objetos_por_material[mat] = []
         objetos_por_material[mat].append(face)
     
     resultados = []
 
+    if "chao" in objFile.lower():
+        REPETICAO_UV = 4.0  # ou outro valor proporcional ao seu scale
+    else:
+        REPETICAO_UV = 1.0  # objetos normais continuam com UVs normais
+
     for material, faces in objetos_por_material.items():
+        # Esta lógica para rastrear os vértices por material continua a mesma
         vertice_inicial = len(vertices_list)
-        # print(f'Material {material}, vértice inicial: {vertice_inicial}')
         
         for face in faces:
+            # face[0] -> índices de vértice
+            # face[1] -> índices de textura
+            # face[2] -> índices de normal
+
+            # Processa vértices (lógica existente)
             for vertice_id in utils.circular_sliding_window_of_three(face[0]):
                 vertices_list.append(modelo['vertices'][vertice_id - 1])
+            
+            # Processa coordenadas de textura (lógica existente)
             for texture_id in utils.circular_sliding_window_of_three(face[1]):
-                uv = modelo['texture'][texture_id - 1]
-                u = float(uv[0])
-                v = float(uv[1])
-                textures_coord_list.append([u, v])
+                # Verifique se o modelo['texture'] e o texture_id são válidos
+                if modelo['texture'] and texture_id > 0 and texture_id <= len(modelo['texture']):
+                    uv = modelo['texture'][texture_id - 1]
+                    u = float(uv[0]) * REPETICAO_UV
+                    v = float(uv[1]) * REPETICAO_UV
+                    textures_coord_list.append([u, v])
+                else:
+                    # Adiciona uma coordenada de textura padrão se não houver
+                    textures_coord_list.append([0.0, 0.0])
+
+            # <<< NOVO: Processar as normais com a mesma lógica de triangulação >>>
+            for normal_id in utils.circular_sliding_window_of_three(face[2]):
+                # Verifique se o modelo['normals'] e o normal_id são válidos
+                if modelo['normals'] and normal_id > 0 and normal_id <= len(modelo['normals']):
+                    normals_list.append(modelo['normals'][normal_id - 1])
+                else:
+                    # Adiciona uma normal padrão se não houver (apontando para cima)
+                    normals_list.append([0.0, 1.0, 0.0])
         
+        # O resto da sua lógica de material/textura permanece igual
         vertice_final = len(vertices_list)
         num_vertices = vertice_final - vertice_inicial
 
-        # carrega a textura associada ao material
         textura_path = material_to_texture.get(material)
         texture_id = load_texture_from_file(textura_path) if textura_path else None
 
@@ -107,4 +136,4 @@ def load_obj_and_texture(objFile, material_to_texture, vertices_list, textures_c
             'texture_id': texture_id
         })
     
-    return resultados  # lista de blocos por material
+    return resultados

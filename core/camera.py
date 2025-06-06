@@ -33,7 +33,7 @@ class Camera:
         if key == glfw.KEY_ESCAPE and action == glfw.PRESS:
             glfw.set_window_should_close(window, True)
         
-        cameraSpeed = 20 * self.deltaTime
+        cameraSpeed = 25 * self.deltaTime
         if key == glfw.KEY_W and (action == glfw.PRESS or action == glfw.REPEAT):
             self.cameraPos += cameraSpeed * self.cameraFront
         
@@ -50,9 +50,9 @@ class Camera:
         if key == glfw.KEY_P and action == glfw.PRESS:
             self.malha = not self.malha
 
-        self.cameraPos.x = max(-40.0, min(40.0, self.cameraPos.x))
-        self.cameraPos.z = max(-40.0, min(40.0, self.cameraPos.z))
-        self.cameraPos.y = max(-1.0, self.cameraPos.y)  # evita que entre no chão
+        self.cameraPos.x = max(-50.0, min(50.0, self.cameraPos.x))
+        self.cameraPos.z = max(-50.0, min(50.0, self.cameraPos.z))
+        self.cameraPos.y = max(-1.0, min(50.0, self.cameraPos.y))  # evita que entre no chão
 
     # glfw: whenever the mouse moves, this callback is called
     # -------------------------------------------------------

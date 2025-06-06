@@ -58,33 +58,80 @@ def model(r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z):
     
     return matrix_transform
 
-def setup_vertex_buffer(program, vertices_list):
-    buffer = glGenBuffers(1)
+def setup_buffers(program, vertices_list, textures_list, normals_list):
+    # BUFFER DE VÉRTICE
+    buffer_vertice = glGenBuffers(1)
     vertices = np.zeros(len(vertices_list), [("position", np.float32, 3)])
     vertices['position'] = vertices_list
-    glBindBuffer(GL_ARRAY_BUFFER, buffer)
+    glBindBuffer(GL_ARRAY_BUFFER, buffer_vertice)
     glBufferData(GL_ARRAY_BUFFER, vertices.nbytes, vertices, GL_STATIC_DRAW)
 
-    stride = vertices.strides[0]
-    offset = ctypes.c_void_p(0)
+    stride_vertice = vertices.strides[0]
+    offset_vertice = ctypes.c_void_p(0)
     loc = glGetAttribLocation(program, "position")
     glEnableVertexAttribArray(loc)
-    glVertexAttribPointer(loc, 3, GL_FLOAT, False, stride, offset)
-    return buffer
+    glVertexAttribPointer(loc, 3, GL_FLOAT, False, stride_vertice, offset_vertice)
 
-def setup_texture_buffer(program, textures_list):
-    buffer = glGenBuffers(1)
-    textures = np.zeros(len(textures_list), [("position", np.float32, 2)])
-    textures['position'] = textures_list
-    glBindBuffer(GL_ARRAY_BUFFER, buffer)
-    glBufferData(GL_ARRAY_BUFFER, textures.nbytes, textures, GL_STATIC_DRAW)
+    # BUFFER DE TEXTURA
+    buffer_textura = glGenBuffers(1)
+    texturas = np.zeros(len(textures_list), [("position", np.float32, 2)])
+    texturas['position'] = textures_list
+    glBindBuffer(GL_ARRAY_BUFFER, buffer_textura)
+    glBufferData(GL_ARRAY_BUFFER, texturas.nbytes, texturas, GL_STATIC_DRAW)
 
-    stride = textures.strides[0]
-    offset = ctypes.c_void_p(0)
+    stride_textura = texturas.strides[0]
+    offset_textura = ctypes.c_void_p(0)
     loc = glGetAttribLocation(program, "texture_coord")
     glEnableVertexAttribArray(loc)
-    glVertexAttribPointer(loc, 2, GL_FLOAT, False, stride, offset)
-    return buffer
+    glVertexAttribPointer(loc, 2, GL_FLOAT, False, stride_textura, offset_textura)
+
+    # BUFFER DE NORMAL
+    buffer_normal = glGenBuffers(1)
+    normais = np.zeros(len(normals_list), [("position", np.float32, 3)])
+    normais['position'] = normals_list
+    glBindBuffer(GL_ARRAY_BUFFER, buffer_normal)
+    glBufferData(GL_ARRAY_BUFFER, normais.nbytes, normais, GL_STATIC_DRAW)
+
+    stride_normal = normais.strides[0]
+    offset_normal = ctypes.c_void_p(0)
+    loc = glGetAttribLocation(program, "normals")
+    glEnableVertexAttribArray(loc)
+    glVertexAttribPointer(loc, 3, GL_FLOAT, False, stride_normal, offset_normal)
+
+# def setup_texture_buffer(program, textures_list):
+#     buffer = glGenBuffers(1)
+#     textures = np.zeros(len(textures_list), [("position", np.float32, 2)])
+#     textures['position'] = textures_list
+#     glBindBuffer(GL_ARRAY_BUFFER, buffer)
+#     glBufferData(GL_ARRAY_BUFFER, textures.nbytes, textures, GL_STATIC_DRAW)
+
+#     stride = textures.strides[0]
+#     offset = ctypes.c_void_p(0)
+#     loc = glGetAttribLocation(program, "texture_coord")
+#     glEnableVertexAttribArray(loc)
+#     glVertexAttribPointer(loc, 2, GL_FLOAT, False, stride, offset)
+
+from PIL import Image
+import numpy as np
+from OpenGL.GL import *
+
+def load_cubemap(faces):
+    textureID = glGenTextures(1)
+    glBindTexture(GL_TEXTURE_CUBE_MAP, textureID)
+
+    for i, face in enumerate(faces):
+        image = Image.open(face).convert('RGB')
+        image_data = np.array(image, dtype=np.uint8)
+        width, height = image.size
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image_data)
+
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE)
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE)
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE)
+
+    return textureID
 
 # Objetos específicos para manipulação
 objeto_translacao = None  # O objeto que será transladado

@@ -17,12 +17,13 @@ class Object3D:
         self.textures_map = textures_map if textures_map is not None else {} # Alterado: self.texture_file -> self.textures_map
         self.cor = cor
 
-    def carregar_objeto(self, vertices_list, textures_coord_list):
+    def carregar_objeto(self, vertices_list, textures_coord_list, normals_list):
         self.materiais = loaders.load_obj_and_texture(
             self.obj_file,
             self.textures_map, # Alterado: passa o dicionário diretamente
             vertices_list,
-            textures_coord_list
+            textures_coord_list,
+            normals_list
         )
     
     def set_position(self, x, y, z):
@@ -142,7 +143,9 @@ class Chao(Object3D):
     def __init__(self):
         super().__init__(
             obj_file='objetos/chao/chao.obj', 
-            textures_map={'None': 'objetos/chao/grama.jpg'} # Ajuste a chave do material se necessário
+            textures_map={'None': 'objetos/chao/grama2.jpg'},
+            # cor=[0.2, 0.7, 0.15]
+            # textures_map={'None': 'objetos/chao/grama.jpg'} # Ajuste a chave do material se necessário
         )
 
 class Placa(Object3D):
