@@ -35,7 +35,7 @@ class Object3D:
     def set_scale(self, x, y, z):
         self.scale = [x, y, z]
 
-    def desenhar(self, program):
+    def desenhar(self, program, ka, kd, ks, ns):
         r_x, r_y, r_z = self.rotation
         t_x, t_y, t_z = self.position
         s_x, s_y, s_z = self.scale
@@ -46,6 +46,17 @@ class Object3D:
 
         loc_usar_textura = glGetUniformLocation(program, "usarTextura")
         loc_color = glGetUniformLocation(program, "color")
+
+        loc_ka = glGetUniformLocation(program, "ka") # recuperando localizacao da variavel ka na GPU
+        loc_kd = glGetUniformLocation(program, "kd") # recuperando localizacao da variavel kd na GPU
+        loc_ks = glGetUniformLocation(program, "ks") # recuperando localizacao da variavel ks na GPU
+        loc_ns = glGetUniformLocation(program, "ns") # recuperando localizacao da variavel ns na GPU
+
+        glUniform1f(loc_ka, ka) ### envia ka pra gpu
+        glUniform1f(loc_kd, kd) ### envia kd pra gpu    
+        glUniform1f(loc_ks, ks) ### envia ks pra gpu        
+        glUniform1f(loc_ns, ns) ### envia ns pra gpu
+        
 
         for mat_info in self.materiais: # Renomeado 'mat' para 'mat_info' para clareza
             if mat_info['texture_id'] is not None and self.cor is None:
@@ -59,9 +70,16 @@ class Object3D:
                     # Cor branca padrão se não houver textura e nem cor do objeto definida
                     glUniform4f(loc_color, 1.0, 1.0, 1.0, 1.0) 
 
+            if mat_info['material'] == "Material.003":
+                glUniform1i(glGetUniformLocation(program, "isLampada"), True)  # ao desenhar a lâmpada
+    
             # CORREÇÃO IMPORTANTE AQUI:
             # As chaves retornadas por load_obj_and_texture são 'vertice_inicial' e 'num_vertices'
             glDrawArrays(GL_TRIANGLES, mat_info['vertice_inicial'], mat_info['num_vertices'])
+
+            if mat_info['material'] == "Material.003":
+                glUniform1i(glGetUniformLocation(program, "isLampada"), False)  # depois de desenhar a lâmpada
+
     # def desenhar(self, program):
     #     # Obtém valores de transformação
     #     r_x, r_y, r_z = self.rotation
@@ -177,6 +195,21 @@ class Bicicleta(Object3D):
             obj_file='objetos/bicicleta/bicicleta.obj', 
             textures_map={'bicycle': 'objetos/bicicleta/bicicleta.jpg'} # Ajuste a chave do material se necessário
         )
+
+class Luz(Object3D):
+    def __init__(self):
+        super().__init__(
+            obj_file='objetos/luz/lamp.obj', 
+            textures_map={}, # Ajuste a chave do material se necessário
+            cor=[0.5, 0.5, 0.5]
+        )
+
+# class Tv(Object3D):
+#     def __init__(self):
+#         super().__init__(
+#             obj_file='objetos/tv/tv.obj', 
+#             textures_map={'default': 'objetos/luz/luz.png'} # Ajuste a chave do material se necessário
+#         )
 
 class Celular(Object3D):
     def __init__(self):

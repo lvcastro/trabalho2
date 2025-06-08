@@ -1,48 +1,55 @@
 #version 330 core
 
-// parametro com a cor da(s) fonte(s) de iluminacao
-uniform vec3 lightPos; // define coordenadas de posicao da luz
+// Parâmetros da luz
+uniform vec3 lightPos;
+uniform vec3 viewPos;
 vec3 lightColor = vec3(1.0, 1.0, 1.0);
 
-// parametros da iluminacao ambiente e difusa
-uniform float ka; // coeficiente de reflexao ambiente
-uniform float kd; // coeficiente de reflexao difusa
+// Parâmetros de iluminação
+uniform float ka;
+uniform float kd;
+uniform float ks;
+uniform float ns;
 
-// parametros da iluminacao especular
-uniform vec3 viewPos; // define coordenadas com a posicao da camera/observador
-uniform float ks; // coeficiente de reflexao especular
-uniform float ns; // expoente de reflexao especular
+uniform bool isLampada;
 
+// Uniform para alternar entre textura e cor
+uniform bool usarTextura;
+uniform vec4 color; // cor sólida, enviada do Python
 
-// parametros recebidos do vertex shader
-varying vec2 out_texture; // recebido do vertex shader
-varying vec3 out_normal; // recebido do vertex shader
-varying vec3 out_fragPos; // recebido do vertex shader
+// Recebidos do vertex shader
+in vec2 out_texture;
+in vec3 out_normal;
+in vec3 out_fragPos;
+
 uniform sampler2D samplerTexture;
 
+out vec4 fragColor;
 
+void main() {
+    // Iluminação ambiente
+    vec3 ambient = ka * lightColor;
 
-void main(){
+    // Iluminação difusa
+    vec3 norm = normalize(out_normal);
+    vec3 lightDir = normalize(lightPos - out_fragPos);
+    float diff = max(dot(norm, lightDir), 0.0);
+    vec3 diffuse = kd * diff * lightColor;
 
-	// calculando reflexao ambiente
-	vec3 ambient = ka * lightColor;             
+    // Iluminação especular
+    vec3 viewDir = normalize(viewPos - out_fragPos);
+    vec3 reflectDir = reflect(-lightDir, norm);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), ns);
+    vec3 specular = ks * spec * lightColor;
 
-	// calculando reflexao difusa
-	vec3 norm = normalize(out_normal); // normaliza vetores perpendiculares
-	vec3 lightDir = normalize(lightPos - out_fragPos); // direcao da luz
-	float diff = max(dot(norm, lightDir), 0.0); // verifica limite angular (entre 0 e 90)
-	vec3 diffuse = kd * diff * lightColor; // iluminacao difusa
-	
-	// calculando reflexao especular
-	vec3 viewDir = normalize(viewPos - out_fragPos); // direcao do observador/camera
-	vec3 reflectDir = normalize(reflect(-lightDir, norm)); // direcao da reflexao
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0), ns);
-	
-	vec3 specular = ks * spec * lightColor;             
-	
-	// aplicando o modelo de iluminacao
-	vec4 texture = texture2D(samplerTexture, out_texture);
-	vec4 result = vec4((ambient + diffuse + specular),1.0) * texture; // aplica iluminacao
-	gl_FragColor = result;
+    vec3 lighting = ambient + diffuse + specular;
 
+	if (isLampada) {
+		vec3 emissiveColor = vec3(1.5, 1.3, 0.9); // tom quente e claro
+		lighting += emissiveColor;
+	}
+
+    vec4 baseColor = usarTextura ? texture(samplerTexture, out_texture) : color;
+
+    fragColor = vec4(lighting, 1.0) * baseColor;
 }

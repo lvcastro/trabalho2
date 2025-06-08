@@ -89,6 +89,7 @@ def load_obj_and_texture(objFile, material_to_texture, vertices_list, textures_c
         REPETICAO_UV = 1.0  # objetos normais continuam com UVs normais
 
     for material, faces in objetos_por_material.items():
+        print(material)
         # Esta lógica para rastrear os vértices por material continua a mesma
         vertice_inicial = len(vertices_list)
         

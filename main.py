@@ -84,6 +84,13 @@ global normals_list
 normals_list = []
 # %%
 # CARREGA OBJETOS
+luz = obj.Luz()
+luz.carregar_objeto(vertices_list, textures_coord_list, normals_list)
+luz.set_position(-1.0, 5.0, 0.0)
+luz.set_scale(5, 5, 5)
+
+# tv = obj.Tv()
+
 casa = obj.Casa()
 casa.carregar_objeto(vertices_list, textures_coord_list, normals_list)
 casa.set_position(0.0, -2.0, 0.0)
@@ -210,26 +217,30 @@ while not glfw.window_should_close(window):
     glUniformMatrix4fv(glGetUniformLocation(program, "projection"), 1, GL_TRUE, mat_projection)
 
     # Uniforms da luz (ajuste os valores como quiser)
-    glUniform1f(glGetUniformLocation(program, "ka"), 1)
-    glUniform1f(glGetUniformLocation(program, "kd"), 0.7)
-    glUniform1f(glGetUniformLocation(program, "ks"), 0.5)
-    glUniform1f(glGetUniformLocation(program, "ns"), 32.0)
-    glUniform3f(glGetUniformLocation(program, "lightPos"), 5.0, 5.0, 5.0)
+    # loc_ka = glGetUniformLocation(program, "ka") # recuperando localizacao da variavel ka na GPU
+    # loc_kd = glGetUniformLocation(program, "kd") # recuperando localizacao da variavel kd na GPU
+    # loc_ks = glGetUniformLocation(program, "ks") # recuperando localizacao da variavel ks na GPU
+    # loc_ns = glGetUniformLocation(program, "ns") # recuperando localizacao da variavel ns na GPU
+    glUniform3f(glGetUniformLocation(program, "lightPos"), 0.0, 5.0, 0.0)
 
     # Posição da câmera
     glUniform3f(glGetUniformLocation(program, "viewPos"), *camera.cameraPos)
 
     # Desenha os objetos
-    casa.desenhar(program)
-    cama.desenhar(program)
-    mesa.desenhar(program)
-    relogio.desenhar(program)
-    banco.desenhar(program)
-    chao.desenhar(program)
-    placa.desenhar(program)
-    bicicleta.desenhar(program)
-    celular.desenhar(program)
-    ventilador.desenhar(program)
+    luz.desenhar(program, 1, 1, 1, 1000.0)
+    casa.desenhar(program, 1, 0.7, 0.5, 32.0)
+    cama.desenhar(program, 0.5, 0.5, 0.5, 32.0)
+    mesa.desenhar(program, 1, 0.7, 0.5, 32.0)
+    relogio.desenhar(program, 1, 0.7, 0.5, 32.0)
+    banco.desenhar(program, 1, 0.7, 0.5, 32.0)
+    chao.desenhar(program, 1, 0.7, 0.5, 32.0)
+    placa.desenhar(program, 1, 0.7, 0.5, 32.0)
+    bicicleta.desenhar(program, 1, 0.7, 0.5, 32.0)
+    celular.desenhar(program, 1, 0.7, 0.5, 32.0)
+    ventilador.desenhar(program, 1, 0.7, 0.5, 32.0)
+    # glUniform1i(glGetUniformLocation(program, "isLampada"), True)  # ao desenhar a lâmpada
+    # glUniform1i(glGetUniformLocation(program, "isLampada"), False) # ao desenhar o abajur
+    # tv.desenhar(program, 1, 0.7, 0.5, 32)
     glfw.swap_buffers(window)
 
 glfw.terminate()
