@@ -139,7 +139,7 @@ bicicleta.set_scale(0.075, 0.075, 0.075)
 celular = obj.Celular()
 celular.carregar_objeto(vertices_list, textures_coord_list, normals_list)
 celular.set_position(-6.6, 0.87, 3.2)
-celular.set_rotation(180.0, 90.0, 90.0)
+celular.set_rotation(0.0, 90.0, 90.0)
 celular.set_scale(0.055, 0.055, 0.055)
 
 ventilador = obj.Ventilador()
