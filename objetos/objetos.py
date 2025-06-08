@@ -222,5 +222,5 @@ class Ventilador(Object3D):
     def __init__(self):
         super().__init__(
             obj_file='objetos/ventilador/ventilador.obj',
-            textures_map={}
+            textures_map={'ceiling_fan': 'ceiling_fan_BaseColor.png'}
         )
