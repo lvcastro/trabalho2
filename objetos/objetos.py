@@ -215,7 +215,7 @@ class Celular(Object3D):
     def __init__(self):
         super().__init__(
             obj_file='objetos/celular/cel.obj',
-            textures_map={'10118_smartrphone_v1_SG': 'objetos/celular/cel.jpg'}
+            textures_map={'Material__0': 'objetos/celular/cel.jpg'}
         )
 
 class Ventilador(Object3D):
