@@ -177,3 +177,17 @@ class Bicicleta(Object3D):
             obj_file='objetos/bicicleta/bicicleta.obj', 
             textures_map={'bicycle': 'objetos/bicicleta/bicicleta.jpg'} # Ajuste a chave do material se necessário
         )
+
+class Celular(Object3D):
+    def __init__(self):
+        super().__init__(
+            obj_file='objetos/celular/cel.obj',
+            textures_map={'10118_smartrphone_v1_SG': 'objetos/celular/cel.jpg'}
+        )
+
+class Ventilador(Object3D):
+    def __init__(self):
+        super().__init__(
+            obj_file='objetos/ventilador/ventilador.obj',
+            textures_map={}
+        )

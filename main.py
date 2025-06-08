@@ -129,6 +129,19 @@ bicicleta.set_position(6.8, -2.0, -9.1)
 bicicleta.set_rotation(-80, 0, 0)
 bicicleta.set_scale(0.075, 0.075, 0.075)
 
+celular = obj.Celular()
+celular.carregar_objeto(vertices_list, textures_coord_list, normals_list)
+celular.set_position(-6.6, 0.87, 3.2)
+celular.set_rotation(180.0, 90.0, 90.0)
+celular.set_scale(0.055, 0.055, 0.055)
+
+ventilador = obj.Ventilador()
+ventilador.carregar_objeto(vertices_list, textures_coord_list, normals_list)
+ventilador.set_position(0, 8.1, 0)
+ventilador.set_rotation(0, 90, 0)
+ventilador.set_scale(2.5, 2.5, 2.5)
+
+
 # %%
 # BUFFERS DE VERTICE E TEXTURA
 utils.setup_buffers(program, vertices_list, textures_coord_list, normals_list)
@@ -215,7 +228,8 @@ while not glfw.window_should_close(window):
     chao.desenhar(program)
     placa.desenhar(program)
     bicicleta.desenhar(program)
-
+    celular.desenhar(program)
+    ventilador.desenhar(program)
     glfw.swap_buffers(window)
 
 glfw.terminate()
