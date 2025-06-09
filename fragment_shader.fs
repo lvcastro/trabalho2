@@ -37,7 +37,7 @@ struct PointLight {
 };
 
 // --- UNIFORMS GLOBAIS ---
-#define NR_POINT_LIGHTS 4
+#define NR_POINT_LIGHTS 6
 
 in vec3 out_fragPos;
 in vec3 out_normal;

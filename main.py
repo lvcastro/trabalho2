@@ -258,7 +258,7 @@ while not glfw.window_should_close(window):
     ourShader.setVec3("dirLight.diffuse", *(utils.diffuse_intensidade,) * 3)
     ourShader.setVec3("dirLight.specular", *(utils.specular_intensidade,) * 3)
 
-    for i in range(4):
+    for i in range(6):
         ourShader.setBool(f"pointLights[{i}].on", utils.estado_luzes[i])
 
     tempo_atual = glfw.get_time()
@@ -296,10 +296,10 @@ while not glfw.window_should_close(window):
 
     farol_esq_frente_offset = glm.vec3(-3.5, -0.1, -28.07 + 30)
     farol_esq_tras_offset   = glm.vec3(-3.5, -0.1, -30.75 + 30)
+
+    # Luzes do carro
     ourShader.setVec3("pointLights[0].position", car_pos + farol_dir_frente_offset)
     ourShader.setVec3("pointLights[1].position", car_pos + farol_dir_tras_offset)
-
-    # Luzes traseiras (vermelhas)
     ourShader.setVec3("pointLights[2].position", car_pos + farol_esq_frente_offset)
     ourShader.setVec3("pointLights[3].position", car_pos + farol_esq_tras_offset)
 
@@ -339,9 +339,34 @@ while not glfw.window_should_close(window):
     ourShader.setFloat("pointLights[3].quadratic", 0.032)
     # ourShader.setBool("pointLights[3].on", True)
 
+
+    # ILUMINAÇÃO INTERNA
+    # Ventilador
+    ventilador_pos_luz = glm.vec3(ventilador.position[0], 
+                                  ventilador.position[1] - 2.0, 
+                                  ventilador.position[2] )
+    ourShader.setVec3("pointLights[4].position", ventilador_pos_luz)
+    ourShader.setVec3("pointLights[4].ambient", 1.0, 1.0, 0.7)
+    ourShader.setVec3("pointLights[4].diffuse", 1.0, 1.0, 0.7)
+    ourShader.setVec3("pointLights[4].specular", 0.4, 0.4, 0.2)
+    ourShader.setFloat("pointLights[4].constant", 1.0)
+    ourShader.setFloat("pointLights[4].linear", 0.09)
+    ourShader.setFloat("pointLights[4].quadratic", 0.032)
+
+    # Celular
+    celular_pos_luz = glm.vec3(celular.position[0], 
+                               celular.position[1] + 1.0, 
+                               celular.position[2])
+    ourShader.setVec3("pointLights[5].position", celular_pos_luz)
+    ourShader.setVec3("pointLights[5].ambient", 0.0, 0.0, 0.9)
+    ourShader.setVec3("pointLights[5].diffuse", 0.0, 0.0, 1.0)
+    ourShader.setVec3("pointLights[5].specular", 0.0, 0.0, 0.2)
+    ourShader.setFloat("pointLights[5].constant", 1.0)
+    ourShader.setFloat("pointLights[5].linear", 0.09)
+    ourShader.setFloat("pointLights[5].quadratic", 0.032)
+
+
     # Desenha os objetos
-    # luz1.desenhar(program)
-    # luz2.desenhar(program)
     casa.desenhar(program)
     cama.desenhar(program)
     mesa.desenhar(program)
@@ -352,12 +377,7 @@ while not glfw.window_should_close(window):
     bicicleta.desenhar(program)
     celular.desenhar(program)
     ventilador.desenhar(program)
-    # luz_celular.desenhar_luz(0.0, 0.0, 1.0, 1.0, 1.0, 1000, program, 'lightPos1')
-    # luz_ventilador.desenhar_luz(0.0, 0.0, 1.0, 1.0, 1.0, 1000, program, 'lightPos2')
     carro.desenhar(program)
-    # glUniform1i(glGetUniformLocation(program, "isLampada"), True)  # ao desenhar a lâmpada
-    # glUniform1i(glGetUniformLocation(program, "isLampada"), False) # ao desenhar o abajur
-    # tv.desenhar(program, 1, 0.7, 0.5, 32)
     glfw.swap_buffers(window)
 
 glfw.terminate()
