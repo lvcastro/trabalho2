@@ -1,48 +1,111 @@
 #version 330 core
+out vec4 FragColor;
 
-// Par√¢metros da luz
-uniform vec3 lightPos;
-uniform vec3 viewPos;
-vec3 lightColor = vec3(1.0, 1.0, 1.0);
+// --- ESTRUTURAS (STRUCTS) ---
+struct Material {
+    // Para texturas
+    sampler2D diffuseMap;
+    float shininess;
 
-// Par√¢metros de ilumina√ß√£o
-uniform float ka;
-uniform float kd;
-uniform float ks;
-uniform float ns;
+    // Flags para alternar
+    bool useDiffuseMap;
+    
+    // Fallback para cores sÛlidas
+    vec3 solidDiffuse;
+    vec3 solidSpecular;
+}; 
 
-// Uniform para alternar entre textura e cor
-uniform bool usarTextura;
-uniform vec4 color; // cor s√≥lida, enviada do Python
+struct DirLight {
+    vec3 direction;
 
-// Recebidos do vertex shader
-in vec2 out_texture;
-in vec3 out_normal;
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+};
+
+struct PointLight {
+    vec3 position;
+    bool on;
+    
+    float constant;
+    float linear;
+    float quadratic;
+	
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+};
+
+// --- UNIFORMS GLOBAIS ---
+#define NR_POINT_LIGHTS 4
+
 in vec3 out_fragPos;
+in vec3 out_normal;
+in vec2 out_texture;
 
-uniform sampler2D samplerTexture;
+uniform vec3 viewPos;
+uniform DirLight dirLight;
+uniform PointLight pointLights[NR_POINT_LIGHTS];
+uniform Material material;
 
-out vec4 fragColor;
+// calculates the color when using a directional light.
+vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec3 diffuseColor, vec3 specularColor)
+{
+    vec3 lightDir = normalize(-light.direction);
+    // diffuse shading
+    float diff = max(dot(normal, lightDir), 0.0);
+    // specular shading
+    vec3 reflectDir = reflect(-lightDir, normal);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    // combine results
+    vec3 ambient = light.ambient * diffuseColor;
+    vec3 diffuse = light.diffuse * diff * diffuseColor;
+    vec3 specular = light.specular * spec * specularColor;
+    return (ambient + diffuse + specular);
+}
 
-void main() {
-    // Ilumina√ß√£o ambiente
-    vec3 ambient = ka * lightColor;
+// calculates the color when using a point light.
+vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 diffuseColor, vec3 specularColor)
+{
+    vec3 lightDir = normalize(light.position - fragPos);
+    // diffuse shading
+    float diff = max(dot(normal, lightDir), 0.0);
+    // specular shading
+    vec3 reflectDir = reflect(-lightDir, normal);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    // attenuation
+    float distance = length(light.position - fragPos);
+    float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));    
+    // combine results
+    vec3 ambient = light.ambient * diffuseColor;
+    vec3 diffuse = light.diffuse * diff * diffuseColor;
+    vec3 specular = light.specular * spec * specularColor;
+    ambient *= attenuation;
+    diffuse *= attenuation;
+    specular *= attenuation;
+    return (ambient + diffuse + specular);
+}
 
-    // Ilumina√ß√£o difusa
+// --- FUN«√O PRINCIPAL ---
+void main()
+{
+    // Decide qual cor usar para o objeto (da textura ou sÛlida)
+    vec3 diffuseColor = material.useDiffuseMap ? texture(material.diffuseMap, out_texture).rgb : material.solidDiffuse;
+    // Para o brilho, sempre usaremos a cor sÛlida
+    vec3 specularColor = material.solidSpecular;
+
     vec3 norm = normalize(out_normal);
-    vec3 lightDir = normalize(lightPos - out_fragPos);
-    float diff = max(dot(norm, lightDir), 0.0);
-    vec3 diffuse = kd * diff * lightColor;
-
-    // Ilumina√ß√£o especular
     vec3 viewDir = normalize(viewPos - out_fragPos);
-    vec3 reflectDir = reflect(-lightDir, norm);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), ns);
-    vec3 specular = ks * spec * lightColor;
-
-    vec3 lighting = ambient + diffuse + specular;
-
-    vec4 baseColor = usarTextura ? texture(samplerTexture, out_texture) : color;
-
-    fragColor = vec4(lighting, 1.0) * baseColor;
+    
+    // ComeÁa com a luz direcional
+    vec3 result = CalcDirLight(dirLight, norm, viewDir, diffuseColor, specularColor);
+    
+    // Adiciona o efeito das luzes pontuais
+    for(int i = 0; i < NR_POINT_LIGHTS; i++)
+    {
+        if(pointLights[i].on)
+            result += CalcPointLight(pointLights[i], norm, out_fragPos, viewDir, diffuseColor, specularColor);
+    }
+  
+    FragColor = vec4(result, 1.0);
 }

@@ -242,28 +242,40 @@ while not glfw.window_should_close(window):
     # loc_kd = glGetUniformLocation(program, "kd") # recuperando localizacao da variavel kd na GPU
     # loc_ks = glGetUniformLocation(program, "ks") # recuperando localizacao da variavel ks na GPU
     # loc_ns = glGetUniformLocation(program, "ns") # recuperando localizacao da variavel ns na GPU
-    glUniform3f(glGetUniformLocation(program, "lightPos"), 3.9, -0.1, -30.75)
+    # glUniform3f(glGetUniformLocation(program, "lightPos"), 3.9, -0.1, -30.75)
 
-    # Posição da câmera
+    # # Posição da câmera
     glUniform3f(glGetUniformLocation(program, "viewPos"), *camera.cameraPos)
+    # directional light
+    ourShader.setVec3("dirLight.direction", 0.0, -1.0, 0.0)
+    ourShader.setVec3("dirLight.ambient", 0.5, 0.5, 0.5)
+    ourShader.setVec3("dirLight.diffuse", 0.4, 0.4, 0.4)
+    ourShader.setVec3("dirLight.specular", 0.0, 0.0, 0.0)
 
+    ourShader.setVec3("pointLights[0].position", glm.vec3( 0.0,  2.0,  0.0),)
+    ourShader.setVec3("pointLights[0].ambient", 0.2, 0.2, 0.2)
+    ourShader.setVec3("pointLights[0].diffuse", 0.8, 0.8, 0.8)
+    ourShader.setVec3("pointLights[0].specular", 1.0, 1.0, 1.0)
+    ourShader.setFloat("pointLights[0].constant", 1.0)
+    ourShader.setFloat("pointLights[0].linear", 0.09)
+    ourShader.setFloat("pointLights[0].quadratic", 0.032)
+    ourShader.setBool("pointLights[0].on", True)
     # Desenha os objetos
-    luz1.desenhar(program, 1, 1, 0, 1000.0)
-    luz2.desenhar(program, 1, 1, 1, 1000.0)
-    casa.desenhar(program, 1, 0.7, 0.5, 32.0)
-    cama.desenhar(program, 1, 0.5, 0.5, 32.0)
-    mesa.desenhar(program, 1, 0.7, 0.5, 32.0)
-    relogio.desenhar(program, 1, 0.7, 0.5, 32.0)
-    banco.desenhar(program, 1, 0.7, 0.5, 32.0)
-    chao.desenhar(program, 1, 0.7, 0.5, 32.0)
-    placa.desenhar(program, 1, 0.7, 0.5, 32.0)
-    bicicleta.desenhar(program, 1, 0.7, 0.5, 32.0)
-    celular.desenhar(program, 1, 0.7, 0.5, 32.0)
-    ventilador.desenhar(program, 1, 0.7, 0.5, 32.0)
-
-    luz_celular.desenhar_luz(0.0, 0.0, 1.0, 1.0, 1.0, 1000, program, 'lightPos1')
-    luz_ventilador.desenhar_luz(0.0, 0.0, 1.0, 1.0, 1.0, 1000, program, 'lightPos2')
-    carro.desenhar(program, 1, 0.7, 0.5, 32.0)
+    luz1.desenhar(program)
+    luz2.desenhar(program)
+    casa.desenhar(program)
+    cama.desenhar(program)
+    mesa.desenhar(program)
+    relogio.desenhar(program)
+    banco.desenhar(program)
+    chao.desenhar(program)
+    placa.desenhar(program)
+    bicicleta.desenhar(program)
+    celular.desenhar(program)
+    ventilador.desenhar(program)
+    # luz_celular.desenhar_luz(0.0, 0.0, 1.0, 1.0, 1.0, 1000, program, 'lightPos1')
+    # luz_ventilador.desenhar_luz(0.0, 0.0, 1.0, 1.0, 1.0, 1000, program, 'lightPos2')
+    carro.desenhar(program)
     # glUniform1i(glGetUniformLocation(program, "isLampada"), True)  # ao desenhar a lâmpada
     # glUniform1i(glGetUniformLocation(program, "isLampada"), False) # ao desenhar o abajur
     # tv.desenhar(program, 1, 0.7, 0.5, 32)
