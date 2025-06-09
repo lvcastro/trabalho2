@@ -80,6 +80,51 @@ class Object3D:
             if mat_info['material'] == "Material.003":
                 glUniform1i(glGetUniformLocation(program, "isLampada"), False)  # depois de desenhar a lâmpada
 
+    def desenha_luz(t_x, t_z, self, program, lightPos = "lightPos1", textureId = 1):
+        
+        #Passando t_x e t_z como parâmetro porque a luz precisará fazer translação na parte externa
+        angle = 0.0
+        r_x = 0.0 
+        r_y = 0.0 
+        r_z = 0.0
+        t_z = 0.0
+        s_x = 0.0
+        s_y = 0.0
+        s_z = 0.0
+
+        mat_model = utils.model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
+        loc_model = glGetUniformLocation(program, "model")
+        glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
+    
+        #### define parametros de iluminacao do modelo
+        ka = 1 # coeficiente de reflexao ambiente do modelo
+        kd = 1 # coeficiente de reflexao difusa do modelo
+        ks = 1 # coeficiente de reflexao especular do modelo
+        ns = 1000.0 # expoente de reflexao especular
+        
+        
+        loc_ka = glGetUniformLocation(program, "ka") # recuperando localizacao da variavel ka na GPU
+        glUniform1f(loc_ka, ka) ### envia ka pra gpu
+        
+        loc_kd = glGetUniformLocation(program, "kd") # recuperando localizacao da variavel kd na GPU
+        glUniform1f(loc_kd, kd) ### envia kd pra gpu    
+        
+        loc_ks = glGetUniformLocation(program, "ks") # recuperando localizacao da variavel ks na GPU
+        glUniform1f(loc_ks, ks) ### envia ns pra gpu        
+        
+        loc_ns = glGetUniformLocation(program, "ns") # recuperando localizacao da variavel ns na GPU
+        glUniform1f(loc_ns, ns) ### envia ns pra gpu            
+        
+        loc_light_pos = glGetUniformLocation(program, lightPos) # recuperando localizacao da variavel lightPos na GPU
+        glUniform3f(loc_light_pos, t_x, t_y, t_z) ### posicao da fonte de luz
+               
+        #define id da textura do modelo
+        glBindTexture(GL_TEXTURE_2D, textureId)
+        
+        # desenha o modelo
+        glDrawArrays(GL_TRIANGLES, verticeInicial_luz, quantosVertices_luz) ## renderizando
+
+
     # def desenhar(self, program):
     #     # Obtém valores de transformação
     #     r_x, r_y, r_z = self.rotation
@@ -108,6 +153,7 @@ class Object3D:
     #     glDrawArrays(GL_TRIANGLES, self.verticeInicial, self.quantosVertices)
 
 # objetos.py (continuação)
+
 
 class Cama(Object3D):
     def __init__(self):

@@ -148,7 +148,7 @@ ventilador.set_position(0, 8.1, 0)
 ventilador.set_rotation(0, 90, 0)
 ventilador.set_scale(2.5, 2.5, 2.5)
 
-
+luz_celular = obj.
 # %%
 # BUFFERS DE VERTICE E TEXTURA
 utils.setup_buffers(program, vertices_list, textures_coord_list, normals_list)
