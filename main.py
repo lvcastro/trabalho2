@@ -150,15 +150,15 @@ carro.set_scale(2, 2, 2)
 carro.set_position(0, -1.5, -30)
 carro.set_rotation(0, 90, 0)
 
-luz1 = obj.Luz()
-luz1.carregar_objeto(vertices_list, textures_coord_list, normals_list)
-luz1.set_position(3.9, -0.1, -28.07)
-luz1.set_scale(0.15, 0.15, 0.15)
-# luz.set_position(3.9, -0.1, -30.75)
-luz2 = obj.Luz()
-luz2.carregar_objeto(vertices_list, textures_coord_list, normals_list)
-luz2.set_position(3.9, -0.1, -30.75)
-luz2.set_scale(0.15, 0.15, 0.15)
+# luz1 = obj.Luz()
+# luz1.carregar_objeto(vertices_list, textures_coord_list, normals_list)
+# luz1.set_position(3.9, -0.1, -28.07)
+# luz1.set_scale(0.15, 0.15, 0.15)
+# # luz.set_position(3.9, -0.1, -30.75)
+# luz2 = obj.Luz()
+# luz2.carregar_objeto(vertices_list, textures_coord_list, normals_list)
+# luz2.set_position(3.9, -0.1, -30.75)
+# luz2.set_scale(0.15, 0.15, 0.15)
 luz_celular = obj.Luz_Celular()
 luz_celular.carregar_objeto(vertices_list, textures_coord_list, normals_list)
 luz_celular.set_position(-6.6, 0.87, 3.2)
@@ -176,14 +176,14 @@ utils.setup_buffers(program, vertices_list, textures_coord_list, normals_list)
 
 # %%
 utils.definir_objetos_manipulaveis(
-    obj_translacao=luz1,    # Objeto que será movido
+    obj_translacao=luz_celular,    # Objeto que será movido
     obj_rotacao=relogio,    # Objeto que será rotacionado 
     obj_escala=banco         # Objeto que será escalado
 )
 # CRIA A CAMERA
 camera = Camera(largura, altura)
 
-key_callback_combinado = utils.combine_callbacks(camera.key_event, utils.objeto_key_event)
+key_callback_combinado = utils.combine_callbacks(camera.key_event, utils.iluminacao_key_callback)
 
 # CALLBACKS    
 glfw.set_key_callback(window, key_callback_combinado)
@@ -198,7 +198,9 @@ glfw.set_input_mode(window, glfw.CURSOR, glfw.CURSOR_DISABLED)
 # ABRE A JANELA E FAZ O DESENHO
 glfw.show_window(window)
 glEnable(GL_DEPTH_TEST) ### importante para 3D
-   
+
+estado_carro = {"fase": 0, "inicio": glfw.get_time()}
+
 while not glfw.window_should_close(window):
     if camera.malha:
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
@@ -248,48 +250,98 @@ while not glfw.window_should_close(window):
     glUniform3f(glGetUniformLocation(program, "viewPos"), *camera.cameraPos)
     # directional light
     ourShader.setVec3("dirLight.direction", 0.0, -1.0, 0.0)
-    ourShader.setVec3("dirLight.ambient", 0.5, 0.5, 0.5)
-    ourShader.setVec3("dirLight.diffuse", 0.4, 0.4, 0.4)
-    ourShader.setVec3("dirLight.specular", 0.0, 0.0, 0.0)
+    # ourShader.setVec3("dirLight.ambient", 0.5, 0.5, 0.5)
+    # ourShader.setVec3("dirLight.diffuse", 0.4, 0.4, 0.4)
+    # ourShader.setVec3("dirLight.specular", 0.0, 0.0, 0.0)
+    
+    ourShader.setVec3("dirLight.ambient", *(utils.ambiente_intensidade,) * 3)
+    ourShader.setVec3("dirLight.diffuse", *(utils.diffuse_intensidade,) * 3)
+    ourShader.setVec3("dirLight.specular", *(utils.specular_intensidade,) * 3)
 
-    ourShader.setVec3("pointLights[0].position", glm.vec3(4.0, -0.1, -28.07))
+    for i in range(4):
+        ourShader.setBool(f"pointLights[{i}].on", utils.estado_luzes[i])
+
+    tempo_atual = glfw.get_time()
+    tempo_passado = tempo_atual - estado_carro["inicio"]
+
+    # Define o ciclo: 0=indo, 1=parado, 2=voltando, 3=parado
+    if estado_carro["fase"] == 0:  # indo pra frente
+        mov_x = -10 + tempo_passado * 5
+        if tempo_passado >= 4.0:  # anda 4s
+            estado_carro["fase"] = 1
+            estado_carro["inicio"] = tempo_atual
+    elif estado_carro["fase"] == 1:  # pausa
+        mov_x = 10
+        if tempo_passado >= 1.5:
+            estado_carro["fase"] = 2
+            estado_carro["inicio"] = tempo_atual
+    elif estado_carro["fase"] == 2:  # voltando
+        mov_x = 10 - tempo_passado * 5
+        if tempo_passado >= 4.0:
+            estado_carro["fase"] = 3
+            estado_carro["inicio"] = tempo_atual
+    elif estado_carro["fase"] == 3:  # pausa
+        mov_x = -10
+        if tempo_passado >= 1.5:
+            estado_carro["fase"] = 0
+            estado_carro["inicio"] = tempo_atual
+
+    carro.set_position(mov_x, -1.5, -30)
+
+    # Atualiza as luzes do carro com base no mov_x como antes
+    car_pos = glm.vec3(mov_x, -1.5, -30)
+
+    farol_dir_frente_offset = glm.vec3(+4.0, -0.1, -28.07 + 30)  # Z relativo
+    farol_dir_tras_offset   = glm.vec3(+4.0, -0.1, -30.75 + 30)
+
+    farol_esq_frente_offset = glm.vec3(-3.5, -0.1, -28.07 + 30)
+    farol_esq_tras_offset   = glm.vec3(-3.5, -0.1, -30.75 + 30)
+    ourShader.setVec3("pointLights[0].position", car_pos + farol_dir_frente_offset)
+    ourShader.setVec3("pointLights[1].position", car_pos + farol_dir_tras_offset)
+
+    # Luzes traseiras (vermelhas)
+    ourShader.setVec3("pointLights[2].position", car_pos + farol_esq_frente_offset)
+    ourShader.setVec3("pointLights[3].position", car_pos + farol_esq_tras_offset)
+
+    # ourShader.setVec3("pointLights[0].position", glm.vec3(4.0, -0.1, -28.07))
     ourShader.setVec3("pointLights[0].ambient", 0.1, 0.1, 0.1)
     ourShader.setVec3("pointLights[0].diffuse", 1.0, 0.95, 0.8)
     ourShader.setVec3("pointLights[0].specular", 1.0, 0.95, 0.8)
     ourShader.setFloat("pointLights[0].constant", 1.0)
     ourShader.setFloat("pointLights[0].linear", 0.09)
     ourShader.setFloat("pointLights[0].quadratic", 0.032)
-    ourShader.setBool("pointLights[0].on", True)
+    # ourShader.setBool("pointLights[0].on", True)
 
-    ourShader.setVec3("pointLights[1].position", glm.vec3(4.0, -0.1, -30.75))
+    # ourShader.setVec3("pointLights[1].position", glm.vec3(4.0, -0.1, -30.75))
     ourShader.setVec3("pointLights[1].ambient", 0.1, 0.1, 0.1)
     ourShader.setVec3("pointLights[1].diffuse", 1.0, 0.95, 0.8)
     ourShader.setVec3("pointLights[1].specular", 1.0, 0.95, 0.8)
     ourShader.setFloat("pointLights[1].constant", 1.0)
     ourShader.setFloat("pointLights[1].linear", 0.09)
     ourShader.setFloat("pointLights[1].quadratic", 0.032)
-    ourShader.setBool("pointLights[1].on", True)
+    # ourShader.setBool("pointLights[1].on", True)
 
-    ourShader.setVec3("pointLights[2].position", glm.vec3(-4.0, -0.1, -28.07))
+    # ourShader.setVec3("pointLights[2].position", glm.vec3(-4.0, -0.1, -28.07))
     ourShader.setVec3("pointLights[2].ambient", 0.05, 0.0, 0.0)
     ourShader.setVec3("pointLights[2].diffuse", 0.9, 0.1, 0.1)
     ourShader.setVec3("pointLights[2].specular", 1.0, 0.2, 0.2)
     ourShader.setFloat("pointLights[2].constant", 1.0)
     ourShader.setFloat("pointLights[2].linear", 0.09)
     ourShader.setFloat("pointLights[2].quadratic", 0.032)
-    ourShader.setBool("pointLights[2].on", True)
+    # ourShader.setBool("pointLights[2].on", True)
 
-    ourShader.setVec3("pointLights[3].position", glm.vec3(-4.0, -0.1, -30.75))
+    # ourShader.setVec3("pointLights[3].position", glm.vec3(-4.0, -0.1, -30.75))
     ourShader.setVec3("pointLights[3].ambient", 0.05, 0.0, 0.0)
     ourShader.setVec3("pointLights[3].diffuse", 0.9, 0.1, 0.1)
     ourShader.setVec3("pointLights[3].specular", 1.0, 0.2, 0.2)
     ourShader.setFloat("pointLights[3].constant", 1.0)
     ourShader.setFloat("pointLights[3].linear", 0.09)
     ourShader.setFloat("pointLights[3].quadratic", 0.032)
-    ourShader.setBool("pointLights[3].on", True)
+    # ourShader.setBool("pointLights[3].on", True)
+
     # Desenha os objetos
-    luz1.desenhar(program)
-    luz2.desenhar(program)
+    # luz1.desenhar(program)
+    # luz2.desenhar(program)
     casa.desenhar(program)
     cama.desenhar(program)
     mesa.desenhar(program)
