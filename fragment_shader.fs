@@ -11,8 +11,6 @@ uniform float kd;
 uniform float ks;
 uniform float ns;
 
-uniform bool isLampada;
-
 // Uniform para alternar entre textura e cor
 uniform bool usarTextura;
 uniform vec4 color; // cor sólida, enviada do Python
@@ -43,11 +41,6 @@ void main() {
     vec3 specular = ks * spec * lightColor;
 
     vec3 lighting = ambient + diffuse + specular;
-
-	if (isLampada) {
-		vec3 emissiveColor = vec3(1.5, 1.3, 0.9); // tom quente e claro
-		lighting += emissiveColor;
-	}
 
     vec4 baseColor = usarTextura ? texture(samplerTexture, out_texture) : color;
 

@@ -70,15 +70,15 @@ class Object3D:
                     # Cor branca padrão se não houver textura e nem cor do objeto definida
                     glUniform4f(loc_color, 1.0, 1.0, 1.0, 1.0) 
 
-            if mat_info['material'] == "Material.003":
-                glUniform1i(glGetUniformLocation(program, "isLampada"), True)  # ao desenhar a lâmpada
+            # if mat_info['material'] == "Material.003":
+            #     glUniform1i(glGetUniformLocation(program, "isLampada"), True)  # ao desenhar a lâmpada
     
             # CORREÇÃO IMPORTANTE AQUI:
             # As chaves retornadas por load_obj_and_texture são 'vertice_inicial' e 'num_vertices'
             glDrawArrays(GL_TRIANGLES, mat_info['vertice_inicial'], mat_info['num_vertices'])
 
-            if mat_info['material'] == "Material.003":
-                glUniform1i(glGetUniformLocation(program, "isLampada"), False)  # depois de desenhar a lâmpada
+            # if mat_info['material'] == "Material.003":
+            #     glUniform1i(glGetUniformLocation(program, "isLampada"), False)  # depois de desenhar a lâmpada
 
 
     def desenhar_luz(self, t_x, t_z, ka, kd, ks, ns, program, lightPos = "lightPos1"):
@@ -222,9 +222,9 @@ class Bicicleta(Object3D):
 class Luz(Object3D):
     def __init__(self):
         super().__init__(
-            obj_file='objetos/luz/lamp.obj', 
-            textures_map={}, # Ajuste a chave do material se necessário
-            cor=[0.5, 0.5, 0.5]
+            obj_file='objetos/luz/luz.obj', 
+            textures_map={'default': 'objetos/luz/luz.png'}, # Ajuste a chave do material se necessário
+            # cor=[0.5, 0.5, 0.5]
         )
 
 # class Tv(Object3D):
@@ -246,4 +246,22 @@ class Ventilador(Object3D):
         super().__init__(
             obj_file='objetos/ventilador/ventilador.obj',
             textures_map={'ceiling_fan': 'objetos/ventilador/ceiling_fan_BaseColor.png'}
+        )
+
+class Carro(Object3D):
+    def __init__(self):
+        super().__init__(
+            obj_file='objetos/carro/carro.obj',
+            textures_map={'goma':'objetos/texturas/metal.jpg',
+                        'vidre__pla':'objetos/texturas/madeira.jpg',
+                        'cromat':'objetos/texturas/metal.jpg',
+                        'vidre_tronja':'objetos/texturas/madeira.jpg',
+                        'matricula':'objetos/texturas/metal.jpg',
+                        'vidre_vermell':'objetos/texturas/madeira.jpg',
+                        'textil_seients':'objetos/texturas/metal.jpg',
+                        'Material.002:':'objetos/texturas/madeira.jpg',
+                        'vidre_':'objetos/texturas/metal.jpg',
+                        'metall':'objetos/texturas/metal_vermelho.jpg',
+                        'M_Bulb': 'objetos/texturas/metal.jpg'}
+            # cor=[1, 0, 0]
         )

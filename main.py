@@ -84,10 +84,6 @@ global normals_list
 normals_list = []
 # %%
 # CARREGA OBJETOS
-luz = obj.Luz()
-luz.carregar_objeto(vertices_list, textures_coord_list, normals_list)
-luz.set_position(-1.0, 5.0, 0.0)
-luz.set_scale(5, 5, 5)
 
 # tv = obj.Tv()
 
@@ -148,6 +144,21 @@ ventilador.set_position(0, 8.1, 0)
 ventilador.set_rotation(0, 90, 0)
 ventilador.set_scale(2.5, 2.5, 2.5)
 
+carro = obj.Carro()
+carro.carregar_objeto(vertices_list, textures_coord_list, normals_list)
+carro.set_scale(2, 2, 2)
+carro.set_position(0, -1.5, -30)
+carro.set_rotation(0, 90, 0)
+
+luz1 = obj.Luz()
+luz1.carregar_objeto(vertices_list, textures_coord_list, normals_list)
+luz1.set_position(3.9, -0.1, -28.07)
+luz1.set_scale(0.15, 0.15, 0.15)
+# luz.set_position(3.9, -0.1, -30.75)
+luz2 = obj.Luz()
+luz2.carregar_objeto(vertices_list, textures_coord_list, normals_list)
+luz2.set_position(3.9, -0.1, -30.75)
+luz2.set_scale(0.15, 0.15, 0.15)
 luz_celular = obj.Luz_Celular()
 luz_celular.carregar_objeto(vertices_list, textures_coord_list, normals_list)
 luz_celular.set_position(-6.6, 0.87, 3.2)
@@ -165,7 +176,7 @@ utils.setup_buffers(program, vertices_list, textures_coord_list, normals_list)
 
 # %%
 utils.definir_objetos_manipulaveis(
-    obj_translacao=cama,    # Objeto que será movido
+    obj_translacao=luz1,    # Objeto que será movido
     obj_rotacao=relogio,    # Objeto que será rotacionado 
     obj_escala=banco         # Objeto que será escalado
 )
@@ -200,7 +211,7 @@ while not glfw.window_should_close(window):
 
     glfw.poll_events()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    glClearColor(0.15, 0.15, 0.15, 1.0)
+    glClearColor(1.0, 1.0, 1.0, 1.0)
 
     glDepthFunc(GL_LEQUAL)
     glUseProgram(skyboxProgram)
@@ -231,15 +242,16 @@ while not glfw.window_should_close(window):
     # loc_kd = glGetUniformLocation(program, "kd") # recuperando localizacao da variavel kd na GPU
     # loc_ks = glGetUniformLocation(program, "ks") # recuperando localizacao da variavel ks na GPU
     # loc_ns = glGetUniformLocation(program, "ns") # recuperando localizacao da variavel ns na GPU
-    glUniform3f(glGetUniformLocation(program, "lightPos"), 0.0, 5.0, 0.0)
+    glUniform3f(glGetUniformLocation(program, "lightPos"), 3.9, -0.1, -30.75)
 
     # Posição da câmera
     glUniform3f(glGetUniformLocation(program, "viewPos"), *camera.cameraPos)
 
     # Desenha os objetos
-    luz.desenhar(program, 1, 1, 1, 1000.0)
+    luz1.desenhar(program, 1, 1, 0, 1000.0)
+    luz2.desenhar(program, 1, 1, 1, 1000.0)
     casa.desenhar(program, 1, 0.7, 0.5, 32.0)
-    cama.desenhar(program, 0.5, 0.5, 0.5, 32.0)
+    cama.desenhar(program, 1, 0.5, 0.5, 32.0)
     mesa.desenhar(program, 1, 0.7, 0.5, 32.0)
     relogio.desenhar(program, 1, 0.7, 0.5, 32.0)
     banco.desenhar(program, 1, 0.7, 0.5, 32.0)
@@ -251,6 +263,7 @@ while not glfw.window_should_close(window):
 
     luz_celular.desenhar_luz(0.0, 0.0, 1.0, 1.0, 1.0, 1000, program, 'lightPos1')
     luz_ventilador.desenhar_luz(0.0, 0.0, 1.0, 1.0, 1.0, 1000, program, 'lightPos2')
+    carro.desenhar(program, 1, 0.7, 0.5, 32.0)
     # glUniform1i(glGetUniformLocation(program, "isLampada"), True)  # ao desenhar a lâmpada
     # glUniform1i(glGetUniformLocation(program, "isLampada"), False) # ao desenhar o abajur
     # tv.desenhar(program, 1, 0.7, 0.5, 32)
