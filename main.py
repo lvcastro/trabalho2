@@ -85,8 +85,6 @@ normals_list = []
 # %%
 # CARREGA OBJETOS
 
-# tv = obj.Tv()
-
 casa = obj.Casa()
 casa.carregar_objeto(vertices_list, textures_coord_list, normals_list)
 casa.set_position(0.0, -2.0, 0.0)
@@ -150,15 +148,6 @@ carro.set_scale(2, 2, 2)
 carro.set_position(0, -1.5, -30)
 carro.set_rotation(0, 90, 0)
 
-# luz1 = obj.Luz()
-# luz1.carregar_objeto(vertices_list, textures_coord_list, normals_list)
-# luz1.set_position(3.9, -0.1, -28.07)
-# luz1.set_scale(0.15, 0.15, 0.15)
-# # luz.set_position(3.9, -0.1, -30.75)
-# luz2 = obj.Luz()
-# luz2.carregar_objeto(vertices_list, textures_coord_list, normals_list)
-# luz2.set_position(3.9, -0.1, -30.75)
-# luz2.set_scale(0.15, 0.15, 0.15)
 luz_celular = obj.Luz_Celular()
 luz_celular.carregar_objeto(vertices_list, textures_coord_list, normals_list)
 luz_celular.set_position(-6.6, 0.87, 3.2)
@@ -200,6 +189,17 @@ glfw.show_window(window)
 glEnable(GL_DEPTH_TEST) ### importante para 3D
 
 estado_carro = {"fase": 0, "inicio": glfw.get_time()}
+
+def camera_dentro_cabana():
+    x, y, z = camera.cameraPos
+    inside_x = -8.10 < x < 8.38
+    inside_y = -0.85 < y < 12.06
+    inside_z = -7.67 < z < 7.56
+
+    if inside_x and inside_y and inside_z:
+        return True
+
+
 
 while not glfw.window_should_close(window):
     if camera.malha:
@@ -339,7 +339,7 @@ while not glfw.window_should_close(window):
     ourShader.setFloat("pointLights[3].quadratic", 0.032)
     # ourShader.setBool("pointLights[3].on", True)
 
-
+    
     # ILUMINAÇÃO INTERNA
     # Ventilador
     ventilador_pos_luz = glm.vec3(ventilador.position[0], 
@@ -357,6 +357,7 @@ while not glfw.window_should_close(window):
     celular_pos_luz = glm.vec3(celular.position[0], 
                                celular.position[1] + 1.0, 
                                celular.position[2])
+    ourShader.setVec3("dirLight.direction", 0.1, 1.0, 0.1)
     ourShader.setVec3("pointLights[5].position", celular_pos_luz)
     ourShader.setVec3("pointLights[5].ambient", 0.0, 0.0, 0.9)
     ourShader.setVec3("pointLights[5].diffuse", 0.0, 0.0, 1.0)
@@ -365,6 +366,14 @@ while not glfw.window_should_close(window):
     ourShader.setFloat("pointLights[5].linear", 0.09)
     ourShader.setFloat("pointLights[5].quadratic", 0.032)
 
+    if not camera_dentro_cabana():
+        ourShader.setBool("pointLights[4].on", not utils.estado_luzes[4])
+        ourShader.setBool("pointLights[5].on", not utils.estado_luzes[5])
+    else:
+        ourShader.setBool("pointLights[0].on", not utils.estado_luzes[0])
+        ourShader.setBool("pointLights[1].on", not utils.estado_luzes[1])
+        ourShader.setBool("pointLights[2].on", not utils.estado_luzes[2])
+        ourShader.setBool("pointLights[3].on", not utils.estado_luzes[3])
 
     # Desenha os objetos
     casa.desenhar(program)

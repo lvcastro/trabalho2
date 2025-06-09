@@ -98,19 +98,6 @@ def setup_buffers(program, vertices_list, textures_list, normals_list):
     glEnableVertexAttribArray(loc)
     glVertexAttribPointer(loc, 3, GL_FLOAT, False, stride_normal, offset_normal)
 
-# def setup_texture_buffer(program, textures_list):
-#     buffer = glGenBuffers(1)
-#     textures = np.zeros(len(textures_list), [("position", np.float32, 2)])
-#     textures['position'] = textures_list
-#     glBindBuffer(GL_ARRAY_BUFFER, buffer)
-#     glBufferData(GL_ARRAY_BUFFER, textures.nbytes, textures, GL_STATIC_DRAW)
-
-#     stride = textures.strides[0]
-#     offset = ctypes.c_void_p(0)
-#     loc = glGetAttribLocation(program, "texture_coord")
-#     glEnableVertexAttribArray(loc)
-#     glVertexAttribPointer(loc, 2, GL_FLOAT, False, stride, offset)
-
 from PIL import Image
 import numpy as np
 from OpenGL.GL import *
@@ -147,103 +134,11 @@ def definir_objetos_manipulaveis(obj_translacao, obj_rotacao, obj_escala):
 
 def objeto_key_event(window, key, scancode, action, mods):
         pass
-    # """Callback para tratar eventos de teclado relacionados aos objetos"""
-    # # Variáveis para controle de objetos
-    # velocidade_movimento = 0.1  # Velocidade de translação
-    # velocidade_rotacao = 5.0    # Velocidade de rotação em graus
-    # velocidade_escala = 0.001     # Velocidade de escala
-    # escala_minima = 0.05
-    
-    # # Só processa teclas quando são pressionadas ou mantidas pressionadas
-    # if action != glfw.PRESS and action != glfw.REPEAT:
-    #     return
-    
-    # # TRANSLAÇÃO - Controlada pelas setas direcionais
-    # if objeto_translacao:
-    #     x, y, z = objeto_translacao.position
-        
-    # # Controles no eixo Z
-    # if key == glfw.KEY_RIGHT:
-    #     z -= velocidade_movimento
-    # elif key == glfw.KEY_LEFT:
-    #     z += velocidade_movimento
-    
-    # # Controles nos eixos Y (com Shift pressionado) e X
-    # elif key == glfw.KEY_UP:
-    #     if mods & glfw.MOD_SHIFT:
-    #         y += velocidade_movimento
-    #     else:
-    #         x -= velocidade_movimento
-    # elif key == glfw.KEY_DOWN:
-    #     if mods & glfw.MOD_SHIFT:
-    #         y -= velocidade_movimento
-    #     else:
-    #         x += velocidade_movimento
-    
-    # objeto_translacao.set_position(x, y, z)
-    
-    # # ROTAÇÃO
-    # if objeto_rotacao:
-    #     r_x, r_y, r_z = objeto_rotacao.rotation
-        
-    #     # # Rotação em torno do eixo X
-    #     # if key == glfw.KEY_Y:
-    #     #     r_x += velocidade_rotacao
-    #     # elif key == glfw.KEY_H:
-    #     #     r_x -= velocidade_rotacao
-        
-    #     # Rotação em torno do eixo Y
-    #     if key == glfw.KEY_U:
-    #         r_y += velocidade_rotacao
-    #     elif key == glfw.KEY_J:
-    #         r_y -= velocidade_rotacao
-        
-    #     # # Rotação em torno do eixo Z
-    #     elif key == glfw.KEY_I:
-    #         r_z += velocidade_rotacao
 
-    #     elif key == glfw.KEY_K:
-    #         r_z -= velocidade_rotacao
-        
-    # objeto_rotacao.set_rotation(r_x, r_y, r_z)
-    
-    # # ESCALA - Controlada pelas teclas S + setas
-    # if objeto_escala:
-    #     sx, sy, sz = objeto_escala.scale
-        
-    #     # Escala no eixo X
-    #     if key == glfw.KEY_Z:  # Aumenta X
-    #         sx += velocidade_escala
-    #     elif key == glfw.KEY_X:  # Diminui X
-    #         sx = max(escala_minima, sx - velocidade_escala)
-        
-        # Escala no eixo Y
-        # elif key == glfw.KEY_C:  # Aumenta Y
-        #     sy += velocidade_escala
-        # elif key == glfw.KEY_V:  # Diminui Y
-        #     sy = max(escala_minima, sy - velocidade_escala)
-        
-        # # Escala no eixo Z
-        # elif key == glfw.KEY_B:  # Aumenta Z
-        #     sz += velocidade_escala
-        # elif key == glfw.KEY_N:  # Diminui Z
-        #     sz = max(escala_minima, sz - velocidade_escala)
-
-        # # Escala uniforme (todos os eixos)
-        # elif key == glfw.KEY_EQUAL or key == glfw.KEY_KP_ADD:  # Aumenta todos
-        #     sx += velocidade_escala
-        #     sy += velocidade_escala
-        #     sz += velocidade_escala
-        # elif key == glfw.KEY_MINUS or key == glfw.KEY_KP_SUBTRACT:  # Diminui todos
-        #     sx = max(escala_minima, sx - velocidade_escala)
-        #     sy = max(escala_minima, sy - velocidade_escala)
-        #     sz = max(escala_minima, sz - velocidade_escala)
-        
-        # objeto_escala.set_scale(sx, sy, sz)
 ambiente_intensidade = 0.5
 diffuse_intensidade = 0.4
 specular_intensidade = 0.0
-estado_luzes = [True, True, True, True, False, False]
+estado_luzes = [True, True, True, True, True, True]
 
 def iluminacao_key_callback(window, key, scancode, action, mods):
     global ambiente_intensidade, diffuse_intensidade, specular_intensidade, estado_luzes
