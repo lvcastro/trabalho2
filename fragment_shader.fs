@@ -10,7 +10,7 @@ struct Material {
     // Flags para alternar
     bool useDiffuseMap;
     
-    // Fallback para cores sólidas
+    // Fallback para cores sï¿½lidas
     vec3 solidDiffuse;
     vec3 solidSpecular;
 }; 
@@ -86,18 +86,18 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir, v
     return (ambient + diffuse + specular);
 }
 
-// --- FUNÇÃO PRINCIPAL ---
+// --- FUNÃ‡ÃƒO PRINCIPAL ---
 void main()
 {
-    // Decide qual cor usar para o objeto (da textura ou sólida)
+    // Decide qual cor usar para o objeto (da textura ou sï¿½lida)
     vec3 diffuseColor = material.useDiffuseMap ? texture(material.diffuseMap, out_texture).rgb : material.solidDiffuse;
-    // Para o brilho, sempre usaremos a cor sólida
+    // Para o brilho, sempre usaremos a cor sï¿½lida
     vec3 specularColor = material.solidSpecular;
 
     vec3 norm = normalize(out_normal);
     vec3 viewDir = normalize(viewPos - out_fragPos);
     
-    // Começa com a luz direcional
+    // Comeï¿½a com a luz direcional
     vec3 result = CalcDirLight(dirLight, norm, viewDir, diffuseColor, specularColor);
     
     // Adiciona o efeito das luzes pontuais
