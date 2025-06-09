@@ -80,28 +80,21 @@ class Object3D:
             if mat_info['material'] == "Material.003":
                 glUniform1i(glGetUniformLocation(program, "isLampada"), False)  # depois de desenhar a lâmpada
 
-    def desenha_luz(t_x, t_z, self, program, lightPos = "lightPos1", textureId = 1):
+
+    def desenhar_luz(self, t_x, t_z, ka, kd, ks, ns, program, lightPos = "lightPos1"):
         
         #Passando t_x e t_z como parâmetro porque a luz precisará fazer translação na parte externa
-        angle = 0.0
         r_x = 0.0 
         r_y = 0.0 
         r_z = 0.0
-        t_z = 0.0
+        t_y = 0.0
         s_x = 0.0
         s_y = 0.0
         s_z = 0.0
 
-        mat_model = utils.model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
+        mat_model = utils.model(r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
         loc_model = glGetUniformLocation(program, "model")
         glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
-    
-        #### define parametros de iluminacao do modelo
-        ka = 1 # coeficiente de reflexao ambiente do modelo
-        kd = 1 # coeficiente de reflexao difusa do modelo
-        ks = 1 # coeficiente de reflexao especular do modelo
-        ns = 1000.0 # expoente de reflexao especular
-        
         
         loc_ka = glGetUniformLocation(program, "ka") # recuperando localizacao da variavel ka na GPU
         glUniform1f(loc_ka, ka) ### envia ka pra gpu
@@ -119,40 +112,24 @@ class Object3D:
         glUniform3f(loc_light_pos, t_x, t_y, t_z) ### posicao da fonte de luz
                
         #define id da textura do modelo
-        glBindTexture(GL_TEXTURE_2D, textureId)
+        glBindTexture(GL_TEXTURE_2D, self.materiais[0]['texture_id'])
         
         # desenha o modelo
-        glDrawArrays(GL_TRIANGLES, verticeInicial_luz, quantosVertices_luz) ## renderizando
+        glDrawArrays(GL_TRIANGLES, self.materiais[0]['vertice_inicial'], self.materiais[0]['num_vertices']) ## renderizando
 
+class Luz_Celular(Object3D):
+    def __init__(self):
+        super().__init__(
+            obj_file='objetos/luz/luz.obj', 
+            textures_map={'default': 'objetos/luz/azul.jpg'}
+        )
 
-    # def desenhar(self, program):
-    #     # Obtém valores de transformação
-    #     r_x, r_y, r_z = self.rotation
-    #     t_x, t_y, t_z = self.position
-    #     s_x, s_y, s_z = self.scale
-        
-    #     # Aplica transformações
-    #     mat_model = utils.model(r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
-    #     loc_model = glGetUniformLocation(program, "model")
-    #     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
-        
-    #     # Configura o uso de textura ou cor sólida
-    #     loc_usar_textura = glGetUniformLocation(program, "usarTextura")
-        
-    #     if self.texture_id is not None and self.cor is None:
-    #         # Usa textura
-    #         glUniform1i(loc_usar_textura, GL_TRUE)  # Habilita textura no shader
-    #         glBindTexture(GL_TEXTURE_2D, self.texture_id)
-    #     else:
-    #         # Usa cor sólida
-    #         loc_color = glGetUniformLocation(program, "color")
-    #         glUniform1i(loc_usar_textura, GL_FALSE)  # Desabilita textura no shader
-    #         glUniform4f(loc_color, *self.cor, 1.0)
-            
-    #     # Desenha o objeto
-    #     glDrawArrays(GL_TRIANGLES, self.verticeInicial, self.quantosVertices)
-
-# objetos.py (continuação)
+class Luz_Ventilador(Object3D):
+    def __init__(self):
+        super().__init__(
+            obj_file='objetos/luz/luz.obj',
+            textures_map={'default': 'objetos/luz/luz.png'}
+        )
 
 
 class Cama(Object3D):
