@@ -89,15 +89,15 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir, v
 // --- FUNÇÃO PRINCIPAL ---
 void main()
 {
-    // Decide qual cor usar para o objeto (da textura ou s�lida)
+    // Decide qual cor usar para o objeto (da textura ou sólida)
     vec3 diffuseColor = material.useDiffuseMap ? texture(material.diffuseMap, out_texture).rgb : material.solidDiffuse;
-    // Para o brilho, sempre usaremos a cor s�lida
+    // Para o brilho, sempre usaremos a cor sólida
     vec3 specularColor = material.solidSpecular;
 
     vec3 norm = normalize(out_normal);
     vec3 viewDir = normalize(viewPos - out_fragPos);
     
-    // Come�a com a luz direcional
+    // Começa com a luz direcional
     vec3 result = CalcDirLight(dirLight, norm, viewDir, diffuseColor, specularColor);
     
     // Adiciona o efeito das luzes pontuais

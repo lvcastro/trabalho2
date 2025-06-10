@@ -366,14 +366,18 @@ while not glfw.window_should_close(window):
     ourShader.setFloat("pointLights[5].linear", 0.09)
     ourShader.setFloat("pointLights[5].quadratic", 0.032)
 
-    if not camera_dentro_cabana():
-        ourShader.setBool("pointLights[4].on", not utils.estado_luzes[4])
-        ourShader.setBool("pointLights[5].on", not utils.estado_luzes[5])
+    # Ligar/desligar luzes internas apenas se a câmera estiver dentro
+    if camera_dentro_cabana():
+        for i in [4, 5]:
+            ourShader.setBool(f"pointLights[{i}].on", utils.estado_luzes[i])
+        for i in [0, 1, 2, 3]:
+            ourShader.setBool(f"pointLights[{i}].on", False)
+    # Ligar/desligar luzes externas apenas se a câmera estiver fora
     else:
-        ourShader.setBool("pointLights[0].on", not utils.estado_luzes[0])
-        ourShader.setBool("pointLights[1].on", not utils.estado_luzes[1])
-        ourShader.setBool("pointLights[2].on", not utils.estado_luzes[2])
-        ourShader.setBool("pointLights[3].on", not utils.estado_luzes[3])
+        for i in [0, 1, 2, 3]:
+            ourShader.setBool(f"pointLights[{i}].on", utils.estado_luzes[i])
+        for i in [4, 5]:
+            ourShader.setBool(f"pointLights[{i}].on", False)
 
     # Desenha os objetos
     casa.desenhar(program)

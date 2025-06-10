@@ -138,7 +138,7 @@ def objeto_key_event(window, key, scancode, action, mods):
 ambiente_intensidade = 0.5
 diffuse_intensidade = 0.4
 specular_intensidade = 0.0
-estado_luzes = [True, True, True, True, True, True]
+estado_luzes = [True, True, True, True, False, False]
 
 def iluminacao_key_callback(window, key, scancode, action, mods):
     global ambiente_intensidade, diffuse_intensidade, specular_intensidade, estado_luzes
