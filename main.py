@@ -1,4 +1,3 @@
-# %%
 import glfw
 from OpenGL.GL import *
 from core.shader import Shader
@@ -9,19 +8,18 @@ import numpy as np
 import loaders
 import glm
 
-# # %%
-# CRIANDO A JANELA
+# %% CONFIGURAÇÃO DA JANELA
 altura = 1080
 largura = 1080
 window = utils.criar_janela(altura, largura)
 
-# %%
-# DEFININDO SHADERS E CRIANDO PROGRAMA
+# %% SHADERS
 ourShader = Shader("vertex_shader.vs", "fragment_shader.fs")
 ourShader.use()
 
 program = ourShader.getProgram()
 
+# %% SKYBOX - define a geometria e as texturas do cubo
 skyboxShader = Shader("skybox_vertex.vs", "skybox_fragment.fs")
 skyboxShader.use()
 
@@ -67,24 +65,21 @@ faces = [
 ]
 
 cubemap_texture = utils.load_cubemap(faces)
-# %%
-# CONFIGURAÇÕES DE EXIBIÇÃO
-# glEnable(GL_TEXTURE_2D)
+# %% CONFIG OPENGL
 glHint(GL_LINE_SMOOTH_HINT, GL_DONT_CARE)
 glEnable( GL_BLEND )
 glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA )
 glEnable(GL_LINE_SMOOTH)
 
-# LISTA DE VERTICES E TEXTURA USADA NO PROGRAMA
+# %% LISTAS DE VÉRTICES GLOBAIS
 global vertices_list
 vertices_list = []    
 global textures_coord_list
 textures_coord_list = []
 global normals_list
 normals_list = []
-# %%
-# CARREGA OBJETOS
 
+# %% OBJETOS INTERNOS E EXTERNOS
 casa = obj.Casa()
 casa.carregar_objeto(vertices_list, textures_coord_list, normals_list)
 casa.set_position(0.0, -2.0, 0.0)
@@ -104,7 +99,7 @@ mesa.set_rotation(0, 90, 0)
 
 relogio = obj.Relogio()
 relogio.carregar_objeto(vertices_list, textures_coord_list, normals_list)
-relogio.set_position(-7.0, 1.1, 3.2)
+relogio.set_position(-7.2, 1.1, 3.2)
 relogio.set_scale(0.09, 0.09, 0.09)
 
 chao = obj.Chao()
@@ -148,58 +143,25 @@ carro.set_scale(2, 2, 2)
 carro.set_position(0, -1.5, -30)
 carro.set_rotation(0, 90, 0)
 
-luz_celular = obj.Luz_Celular()
-luz_celular.carregar_objeto(vertices_list, textures_coord_list, normals_list)
-luz_celular.set_position(-6.6, 0.87, 3.2)
-luz_celular.set_rotation(0.0, 90.0, 0.0)
-luz_celular.set_scale(10, 10, 10)
-
-luz_ventilador = obj.Luz_Ventilador()
-luz_ventilador.carregar_objeto(vertices_list, textures_coord_list, normals_list)
-luz_ventilador.set_position(0.0, 8.1, 0.0)
-luz_ventilador.set_rotation(0.0, 90.0, 0.0)
-luz_ventilador.set_scale(10, 10, 10)
-# %%
-# BUFFERS DE VERTICE E TEXTURA
+# %% BUFFERS
 utils.setup_buffers(program, vertices_list, textures_coord_list, normals_list)
 
-# %%
-utils.definir_objetos_manipulaveis(
-    obj_translacao=luz_celular,    # Objeto que será movido
-    obj_rotacao=relogio,    # Objeto que será rotacionado 
-    obj_escala=banco         # Objeto que será escalado
-)
-# CRIA A CAMERA
+# %% CONTROLES E CALLBACKS
 camera = Camera(largura, altura)
-
 key_callback_combinado = utils.combine_callbacks(camera.key_event, utils.iluminacao_key_callback)
 
-# CALLBACKS    
+# Registra os callbacks no GLFW
 glfw.set_key_callback(window, key_callback_combinado)
 glfw.set_framebuffer_size_callback(window, utils.framebuffer_size_callback)
 glfw.set_cursor_pos_callback(window, camera.mouse_callback)
 glfw.set_scroll_callback(window, camera.scroll_callback)
+glfw.set_input_mode(window, glfw.CURSOR, glfw.CURSOR_DISABLED) # diz ao GLFW para capturar o mouse
 
-# tell GLFW to capture our mouse
-glfw.set_input_mode(window, glfw.CURSOR, glfw.CURSOR_DISABLED)
-
-# %%
 # ABRE A JANELA E FAZ O DESENHO
 glfw.show_window(window)
-glEnable(GL_DEPTH_TEST) ### importante para 3D
+glEnable(GL_DEPTH_TEST)
 
 estado_carro = {"fase": 0, "inicio": glfw.get_time()}
-
-def camera_dentro_cabana():
-    x, y, z = camera.cameraPos
-    inside_x = -8.10 < x < 8.38
-    inside_y = -0.85 < y < 12.06
-    inside_z = -7.67 < z < 7.56
-
-    if inside_x and inside_y and inside_z:
-        return True
-
-
 
 while not glfw.window_should_close(window):
     if camera.malha:
@@ -216,15 +178,17 @@ while not glfw.window_should_close(window):
     glClearColor(1.0, 1.0, 1.0, 1.0)
 
     glDepthFunc(GL_LEQUAL)
+    # Ativa o shader da skybox
     glUseProgram(skyboxProgram)
 
     mat_view = camera.view()
     mat_projection = camera.projection(largura, altura)
-    view_skybox = glm.mat4(glm.mat3(camera.view()))  # remove a translação
+    view_skybox = glm.mat4(glm.mat3(camera.view()))  # remove a translação para desenhar a skybox
 
     glUniformMatrix4fv(glGetUniformLocation(skyboxProgram, "view"), 1, GL_FALSE, glm.value_ptr(view_skybox))
     glUniformMatrix4fv(glGetUniformLocation(skyboxProgram, "projection"), 1, GL_TRUE, mat_projection)
 
+    # DESENHA A SKYBOX
     glBindVertexArray(skybox_VAO)
     glActiveTexture(GL_TEXTURE0)
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap_texture)
@@ -232,34 +196,35 @@ while not glfw.window_should_close(window):
     glBindVertexArray(0)
     glDepthFunc(GL_LESS)
 
-    # Ativa o shader
+    # Ativa o shader do restante dos objetos
     glUseProgram(program)
 
     # Atualiza uniforms da câmera
     glUniformMatrix4fv(glGetUniformLocation(program, "view"), 1, GL_TRUE, mat_view)
     glUniformMatrix4fv(glGetUniformLocation(program, "projection"), 1, GL_TRUE, mat_projection)
 
-    # Uniforms da luz (ajuste os valores como quiser)
-    # loc_ka = glGetUniformLocation(program, "ka") # recuperando localizacao da variavel ka na GPU
-    # loc_kd = glGetUniformLocation(program, "kd") # recuperando localizacao da variavel kd na GPU
-    # loc_ks = glGetUniformLocation(program, "ks") # recuperando localizacao da variavel ks na GPU
-    # loc_ns = glGetUniformLocation(program, "ns") # recuperando localizacao da variavel ns na GPU
-    # glUniform3f(glGetUniformLocation(program, "lightPos"), 3.9, -0.1, -30.75)
-
-    # # Posição da câmera
+    # Posição da câmera
     glUniform3f(glGetUniformLocation(program, "viewPos"), *camera.cameraPos)
-    # directional light
+
+    # --- OBJETOS E LUZES ---
+    # Luz direcional (ambiente)
     ourShader.setVec3("dirLight.direction", 0.0, -1.0, 0.0)
-    # ourShader.setVec3("dirLight.ambient", 0.5, 0.5, 0.5)
-    # ourShader.setVec3("dirLight.diffuse", 0.4, 0.4, 0.4)
-    # ourShader.setVec3("dirLight.specular", 0.0, 0.0, 0.0)
-    
     ourShader.setVec3("dirLight.ambient", *(utils.ambiente_intensidade,) * 3)
     ourShader.setVec3("dirLight.diffuse", *(utils.diffuse_intensidade,) * 3)
     ourShader.setVec3("dirLight.specular", *(utils.specular_intensidade,) * 3)
 
-    for i in range(6):
-        ourShader.setBool(f"pointLights[{i}].on", utils.estado_luzes[i])
+    # Ligar/desligar luzes internas apenas se a câmera estiver dentro
+    if utils.camera_dentro_casa(camera):
+        for i in [4, 5]:
+            ourShader.setBool(f"pointLights[{i}].on", utils.estado_luzes[i])
+        for i in [0, 1, 2, 3]:
+            ourShader.setBool(f"pointLights[{i}].on", False)
+    # Ligar/desligar luzes externas apenas se a câmera estiver fora
+    else:
+        for i in [0, 1, 2, 3]:
+            ourShader.setBool(f"pointLights[{i}].on", utils.estado_luzes[i])
+        for i in [4, 5]:
+            ourShader.setBool(f"pointLights[{i}].on", False)
 
     tempo_atual = glfw.get_time()
     tempo_passado = tempo_atual - estado_carro["inicio"]
@@ -297,47 +262,39 @@ while not glfw.window_should_close(window):
     farol_esq_frente_offset = glm.vec3(-3.5, -0.1, -28.07 + 30)
     farol_esq_tras_offset   = glm.vec3(-3.5, -0.1, -30.75 + 30)
 
-    # Luzes do carro
+    # ILUMINAÇÃO EXTERNA (luzes do carro)
     ourShader.setVec3("pointLights[0].position", car_pos + farol_dir_frente_offset)
     ourShader.setVec3("pointLights[1].position", car_pos + farol_dir_tras_offset)
     ourShader.setVec3("pointLights[2].position", car_pos + farol_esq_frente_offset)
     ourShader.setVec3("pointLights[3].position", car_pos + farol_esq_tras_offset)
 
-    # ourShader.setVec3("pointLights[0].position", glm.vec3(4.0, -0.1, -28.07))
     ourShader.setVec3("pointLights[0].ambient", 0.1, 0.1, 0.1)
     ourShader.setVec3("pointLights[0].diffuse", 1.0, 0.95, 0.8)
     ourShader.setVec3("pointLights[0].specular", 1.0, 0.95, 0.8)
     ourShader.setFloat("pointLights[0].constant", 1.0)
     ourShader.setFloat("pointLights[0].linear", 0.09)
     ourShader.setFloat("pointLights[0].quadratic", 0.032)
-    # ourShader.setBool("pointLights[0].on", True)
 
-    # ourShader.setVec3("pointLights[1].position", glm.vec3(4.0, -0.1, -30.75))
     ourShader.setVec3("pointLights[1].ambient", 0.1, 0.1, 0.1)
     ourShader.setVec3("pointLights[1].diffuse", 1.0, 0.95, 0.8)
     ourShader.setVec3("pointLights[1].specular", 1.0, 0.95, 0.8)
     ourShader.setFloat("pointLights[1].constant", 1.0)
     ourShader.setFloat("pointLights[1].linear", 0.09)
     ourShader.setFloat("pointLights[1].quadratic", 0.032)
-    # ourShader.setBool("pointLights[1].on", True)
 
-    # ourShader.setVec3("pointLights[2].position", glm.vec3(-4.0, -0.1, -28.07))
     ourShader.setVec3("pointLights[2].ambient", 0.05, 0.0, 0.0)
     ourShader.setVec3("pointLights[2].diffuse", 0.9, 0.1, 0.1)
     ourShader.setVec3("pointLights[2].specular", 1.0, 0.2, 0.2)
     ourShader.setFloat("pointLights[2].constant", 1.0)
     ourShader.setFloat("pointLights[2].linear", 0.09)
     ourShader.setFloat("pointLights[2].quadratic", 0.032)
-    # ourShader.setBool("pointLights[2].on", True)
 
-    # ourShader.setVec3("pointLights[3].position", glm.vec3(-4.0, -0.1, -30.75))
     ourShader.setVec3("pointLights[3].ambient", 0.05, 0.0, 0.0)
     ourShader.setVec3("pointLights[3].diffuse", 0.9, 0.1, 0.1)
     ourShader.setVec3("pointLights[3].specular", 1.0, 0.2, 0.2)
     ourShader.setFloat("pointLights[3].constant", 1.0)
     ourShader.setFloat("pointLights[3].linear", 0.09)
     ourShader.setFloat("pointLights[3].quadratic", 0.032)
-    # ourShader.setBool("pointLights[3].on", True)
 
     
     # ILUMINAÇÃO INTERNA
@@ -366,19 +323,6 @@ while not glfw.window_should_close(window):
     ourShader.setFloat("pointLights[5].linear", 0.09)
     ourShader.setFloat("pointLights[5].quadratic", 0.032)
 
-    # Ligar/desligar luzes internas apenas se a câmera estiver dentro
-    if camera_dentro_cabana():
-        for i in [4, 5]:
-            ourShader.setBool(f"pointLights[{i}].on", utils.estado_luzes[i])
-        for i in [0, 1, 2, 3]:
-            ourShader.setBool(f"pointLights[{i}].on", False)
-    # Ligar/desligar luzes externas apenas se a câmera estiver fora
-    else:
-        for i in [0, 1, 2, 3]:
-            ourShader.setBool(f"pointLights[{i}].on", utils.estado_luzes[i])
-        for i in [4, 5]:
-            ourShader.setBool(f"pointLights[{i}].on", False)
-
     # Desenha os objetos
     casa.desenhar(program)
     cama.desenhar(program)
@@ -391,6 +335,7 @@ while not glfw.window_should_close(window):
     celular.desenhar(program)
     ventilador.desenhar(program)
     carro.desenhar(program)
+
     glfw.swap_buffers(window)
 
 glfw.terminate()

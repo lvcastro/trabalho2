@@ -120,57 +120,36 @@ def load_cubemap(faces):
 
     return textureID
 
-# Objetos específicos para manipulação
-objeto_translacao = None  # O objeto que será transladado
-objeto_rotacao = None     # O objeto que será rotacionado
-objeto_escala = None      # O objeto que será escalado
-
-def definir_objetos_manipulaveis(obj_translacao, obj_rotacao, obj_escala):
-    """Define quais objetos serão manipulados por translação, rotação e escala"""
-    global objeto_translacao, objeto_rotacao, objeto_escala
-    objeto_translacao = obj_translacao
-    objeto_rotacao = obj_rotacao
-    objeto_escala = obj_escala
-
-def objeto_key_event(window, key, scancode, action, mods):
-        pass
-
 ambiente_intensidade = 0.5
 diffuse_intensidade = 0.4
 specular_intensidade = 0.0
 estado_luzes = [True, True, True, True, False, False]
 
 def iluminacao_key_callback(window, key, scancode, action, mods):
+    """"Callback para controle da iluminação"""
     global ambiente_intensidade, diffuse_intensidade, specular_intensidade, estado_luzes
 
     if action == glfw.PRESS or action == glfw.REPEAT:
         # Intensidade ambiente
         if key == glfw.KEY_KP_ADD or key == glfw.KEY_EQUAL:
-            print("1")
             ambiente_intensidade = min(1.0, ambiente_intensidade + 0.05)
         elif key == glfw.KEY_KP_SUBTRACT or key == glfw.KEY_MINUS:
-            print("2")
             ambiente_intensidade = max(0.0, ambiente_intensidade - 0.05)
 
         # Difusa
         elif key == glfw.KEY_T:
-            print("3")
             diffuse_intensidade = min(1.0, diffuse_intensidade + 0.05)
         elif key == glfw.KEY_Y:
-            print("4")
             diffuse_intensidade = max(0.0, diffuse_intensidade - 0.05)
 
         # Especular
         elif key == glfw.KEY_G:
-            print("5")
             specular_intensidade = min(1.0, specular_intensidade + 0.05)
         elif key == glfw.KEY_H:
-            print("6")
             specular_intensidade = max(0.0, specular_intensidade - 0.05)
 
         # Interruptores das luzes
         elif key == glfw.KEY_1:
-            print("7")
             estado_luzes[0] = not estado_luzes[0]
         elif key == glfw.KEY_2:
             estado_luzes[1] = not estado_luzes[1]
@@ -183,6 +162,15 @@ def iluminacao_key_callback(window, key, scancode, action, mods):
         elif key == glfw.KEY_6:
             estado_luzes[5] = not estado_luzes[5]
 
+def camera_dentro_casa(camera):
+    """Verifica se a câmera está posicionada dentro da casa"""
+    x, y, z = camera.cameraPos
+    inside_x = -8.10 < x < 8.38
+    inside_y = -0.85 < y < 12.06
+    inside_z = -7.67 < z < 7.56
+
+    if inside_x and inside_y and inside_z:
+        return True
 
 def combine_callbacks(*callbacks):
     """Combina múltiplos callbacks em um único"""

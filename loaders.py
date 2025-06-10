@@ -60,13 +60,10 @@ def load_texture_from_file(img_textura):
     img_width = img.size[0]
     img_height = img.size[1]
     image_data = img.tobytes("raw", "RGB", 0, -1)
-    #image_data = np.array(list(img.getdata()), np.uint8)
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, img_width, img_height, 0, GL_RGB, GL_UNSIGNED_BYTE, image_data)
-    # print("TEXTURE ID: ",texture_id)
     return texture_id
 
 def load_obj_and_texture(objFile, material_to_texture, vertices_list, textures_coord_list, normals_list):
-    # load_model_from_file agora retorna normais e faces com 4 elementos
     modelo = load_model_from_file(objFile)
     
     print(f'Processando modelo {objFile}.')
@@ -75,8 +72,7 @@ def load_obj_and_texture(objFile, material_to_texture, vertices_list, textures_c
     
     # Agrupar faces por material
     for face in modelo['faces']:
-        # Como a face agora é (vértices, texturas, normais, material), o material está no índice 3
-        mat = face[3] or "default" # <<< ALTERADO: Índice do material mudou de 2 para 3
+        mat = face[3] or "default"
         if mat not in objetos_por_material:
             objetos_por_material[mat] = []
         objetos_por_material[mat].append(face)
@@ -89,8 +85,6 @@ def load_obj_and_texture(objFile, material_to_texture, vertices_list, textures_c
         REPETICAO_UV = 1.0  # objetos normais continuam com UVs normais
 
     for material, faces in objetos_por_material.items():
-        print(material)
-        # Esta lógica para rastrear os vértices por material continua a mesma
         vertice_inicial = len(vertices_list)
         
         for face in faces:
@@ -98,13 +92,13 @@ def load_obj_and_texture(objFile, material_to_texture, vertices_list, textures_c
             # face[1] -> índices de textura
             # face[2] -> índices de normal
 
-            # Processa vértices (lógica existente)
+            # Processa vértices
             for vertice_id in utils.circular_sliding_window_of_three(face[0]):
                 vertices_list.append(modelo['vertices'][vertice_id - 1])
             
-            # Processa coordenadas de textura (lógica existente)
+            # Processa coordenadas de textura
             for texture_id in utils.circular_sliding_window_of_three(face[1]):
-                # Verifique se o modelo['texture'] e o texture_id são válidos
+                # Verifica se o modelo['texture'] e o texture_id são válidos
                 if modelo['texture'] and texture_id > 0 and texture_id <= len(modelo['texture']):
                     uv = modelo['texture'][texture_id - 1]
                     u = float(uv[0]) * REPETICAO_UV
@@ -114,16 +108,14 @@ def load_obj_and_texture(objFile, material_to_texture, vertices_list, textures_c
                     # Adiciona uma coordenada de textura padrão se não houver
                     textures_coord_list.append([0.0, 0.0])
 
-            # <<< NOVO: Processar as normais com a mesma lógica de triangulação >>>
             for normal_id in utils.circular_sliding_window_of_three(face[2]):
-                # Verifique se o modelo['normals'] e o normal_id são válidos
+                # Verifica se o modelo['normals'] e o normal_id são válidos
                 if modelo['normals'] and normal_id > 0 and normal_id <= len(modelo['normals']):
                     normals_list.append(modelo['normals'][normal_id - 1])
                 else:
                     # Adiciona uma normal padrão se não houver (apontando para cima)
                     normals_list.append([0.0, 1.0, 0.0])
         
-        # O resto da sua lógica de material/textura permanece igual
         vertice_final = len(vertices_list)
         num_vertices = vertice_final - vertice_inicial
 
